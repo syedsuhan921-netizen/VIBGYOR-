@@ -1,9 +1,10 @@
 .logo {
     width: 280px !important;
-    height: auto !important;
     max-width: 80% !important;
+    height: auto !important;
     display: block;
     margin: 0 auto 20px;
+    mix-blend-mode: screen;
 }
 body {
     margin: 0;
