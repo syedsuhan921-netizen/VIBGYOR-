@@ -1,9 +1,10 @@
 .logo {
-    width: 280px;
-    max-width: 80%;
-    height: auto;
+    width: 280px !important;
+    height: auto !important;
+    max-width: 80% !important;
     display: block;
     margin: 0 auto 20px;
+}
 }
 body {
     margin: 0;
