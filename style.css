@@ -1,3 +1,15 @@
+.logo {
+    width: 280px;
+    max-width: 80%;
+    height: auto;
+    display: block;
+    margin: 0 auto 20px;
+}
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    ...
+    }
 body{
     margin:0;
     font-family:Arial,sans-serif;
@@ -8,6 +20,7 @@ body{
 
 header{
     padding:30px;
+    
 }
 
 h1{
