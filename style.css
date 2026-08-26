@@ -63,3 +63,31 @@ footer{
     padding:20px;
     background:rgba(0,0,0,.3);
 }
+
+.social-links {
+    margin-top: 15px;
+    padding: 15px 0;
+}
+
+.social-links p {
+    margin: 10px 0;
+    font-size: 14px;
+}
+
+.social-link {
+    display: inline-block;
+    color: #00e5ff;
+    text-decoration: none;
+    margin: 0 15px;
+    padding: 10px 15px;
+    border: 1px solid #00e5ff;
+    border-radius: 20px;
+    transition: 0.3s;
+    font-weight: bold;
+}
+
+.social-link:hover {
+    background: #00e5ff;
+    color: black;
+    transform: scale(1.05);
+}
