@@ -1,3 +1,131 @@
+/* ================= STARTUP ================= */
+
+#startup {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+
+    background: #080b14;
+
+    display: flex;
+    flex-direction: column;
+
+    justify-content: center;
+    align-items: center;
+
+    text-align: center;
+
+    animation: startupExit 1s ease 3s forwards;
+}
+
+#startup img {
+    width: 180px;
+    height: 180px;
+
+    object-fit: cover;
+
+    border-radius: 25px;
+
+    animation: logoAppear 1.2s ease;
+}
+
+#startup h1 {
+    margin-top: 25px;
+
+    font-size: 42px;
+
+    letter-spacing: 6px;
+
+    background: linear-gradient(
+        90deg,
+        red,
+        orange,
+        yellow,
+        lime,
+        cyan,
+        blue,
+        violet
+    );
+
+    -webkit-background-clip: text;
+    color: transparent;
+}
+
+#startup p {
+    margin-top: 8px;
+
+    color: #8b96aa;
+
+    letter-spacing: 5px;
+
+    font-size: 12px;
+}
+
+.loading {
+    width: 45px;
+    height: 45px;
+
+    margin-top: 35px;
+
+    border: 3px solid #252c3b;
+
+    border-top-color: #00e5ff;
+
+    border-radius: 50%;
+
+    animation: spin 1s linear infinite;
+}
+
+.loading div {
+    display: none;
+}
+
+
+/* MAIN WEBSITE STARTS HIDDEN */
+
+#website {
+    opacity: 0;
+
+    animation: websiteAppear 1s ease 2.8s forwards;
+}
+
+
+/* ANIMATIONS */
+
+@keyframes logoAppear {
+
+    from {
+        opacity: 0;
+        transform: scale(0.5);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes spin {
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes startupExit {
+
+    to {
+        opacity: 0;
+        visibility: hidden;
+    }
+}
+
+@keyframes websiteAppear {
+
+    to {
+        opacity: 1;
+    }
+}
 .logo {
     width: 280px !important;
     max-width: 80% !important;
