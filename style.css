@@ -219,3 +219,10 @@ footer{
     color: black;
     transform: scale(1.05);
 }
+/* Tiny VIBGYOR logo in the top-left */
+.brand img {
+    width: 25px;
+    height: 25px;
+    object-fit: cover;
+    border-radius: 6px;
+}
