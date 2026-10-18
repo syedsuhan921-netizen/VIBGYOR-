@@ -11,14 +11,11 @@ function closeSettings() {
 }
 
 function toggleTheme() {
-
     document.body.classList.toggle("light");
-
     alert("Theme setting updated!");
 }
 
 function showAbout() {
-
     alert(
         "VIBGYOR Technologies\n\n" +
         "Technology • AI • Programming • Gadgets\n\n" +
