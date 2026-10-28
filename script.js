@@ -1,24 +1,14 @@
-function showMessage() {
-    alert("🚀 Welcome to VIBGYOR Technologies!");
-}
-
-function openSettings() {
-    document.getElementById("settingsPanel").style.display = "flex";
-}
-
-function closeSettings() {
-    document.getElementById("settingsPanel").style.display = "none";
+function showPage(pageId) {
+    const pages = document.querySelectorAll('.page-view');
+    pages.forEach(page => page.style.display = 'none');
+    document.getElementById(pageId).style.display = 'block';
+    window.scrollTo(0, 0);
 }
 
 function toggleTheme() {
-    document.body.classList.toggle("light");
-    alert("Theme setting updated!");
+    document.body.classList.toggle('light-mode');
 }
 
-function showAbout() {
-    alert(
-        "VIBGYOR Technologies\n\n" +
-        "Technology • AI • Programming • Gadgets\n\n" +
-        "Created by SD. Suhan"
-    );
+function showMessage() {
+    alert("Welcome to VIBGYOR Technologies! Click any category card to open its dedicated full page.");
 }
