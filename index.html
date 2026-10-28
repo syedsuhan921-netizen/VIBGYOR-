@@ -1,51 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VIBGYOR Technologies</title>
-    <link rel="icon" type="image/jpeg" href="Screenshot_2026_0726_204909.jpg">
-    <!-- Linking the separate CSS file -->
+    
+    <!-- EMBEDDED SVG FAVICON -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='%230b0f19' stroke='%2300e5ff' stroke-width='6'/><polygon points='50,20 75,35 75,65 50,80 25,65 25,35' fill='none' stroke='%2300e5ff' stroke-width='4'/><circle cx='50' cy='50' r='10' fill='%2300e5ff'/></svg>">
+    
     <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
-
-    <!-- STARTUP SCREEN -->
-    <div id="startup">
-        <img src="Screenshot_2026_0726_204909.jpg" alt="VIBGYOR Logo">
-        <h1>VIBGYOR</h1>
-        <p>TECHNOLOGIES</p>
-        <div class="loading"><div></div></div>
-    </div>
-
-    <!-- MAIN WEBSITE -->
-    <div id="website">
-
-        <!-- TOP BAR -->
+    <div id="website" class="page-view">
         <header>
-            <div class="brand">
-                <img src="Screenshot_2026_0726_204909.jpg" alt="VIBGYOR Logo">
-                <span>VIBGYOR</span>
-            </div>
-            <button class="settings" onclick="openSettings()">⚙️</button>
+            <div class="brand"><span>VIBGYOR Technologies</span></div>
+            <button class="settings-icon-btn" onclick="showPage('settingsPage')">⚙️</button>
         </header>
 
-        <!-- NAVIGATION -->
         <nav>
             <a href="#home">Home</a>
             <a href="#news">Tech News</a>
-            <a href="#ai">AI</a>
-            <a href="#programming">Programming</a>
-            <a href="#gadgets">Gadgets</a>
-            <a href="#more">More</a>
+            <a href="#" onclick="showPage('settingsPage')">Settings</a>
         </nav>
 
-        <!-- MAIN CONTENT -->
         <main>
-
-            <!-- HOME / HERO -->
             <section class="hero" id="home">
                 <p class="small-title">WELCOME TO</p>
                 <h1>VIBGYOR <span>Technologies</span></h1>
@@ -53,91 +31,27 @@
                 <button class="explore" onclick="showMessage()">Explore Now →</button>
             </section>
 
-            <!-- CATEGORIES -->
             <section class="categories">
-                <div class="category">
-                    <div class="emoji">🤖</div>
-                    <h3>AI</h3>
-                    <p>Artificial Intelligence</p>
-                </div>
-                <div class="category">
-                    <div class="emoji">💻</div>
-                    <h3>Programming</h3>
-                    <p>Coding & Development</p>
-                </div>
-                <div class="category">
-                    <div class="emoji">📱</div>
-                    <h3>Gadgets</h3>
-                    <p>Phones & Devices</p>
-                </div>
-                <div class="category">
-                    <div class="emoji">🔬</div>
-                    <h3>Science</h3>
-                    <p>Future Innovation</p>
-                </div>
+                <div class="category" onclick="showPage('aiPage')"><div class="emoji">🤖</div><h3>AI</h3><p>Artificial Intelligence</p></div>
+                <div class="category" onclick="showPage('programmingPage')"><div class="emoji">💻</div><h3>Programming</h3><p>Coding & Development</p></div>
+                <div class="category" onclick="showPage('gadgetsPage')"><div class="emoji">📱</div><h3>Gadgets</h3><p>Phones & Devices</p></div>
+                <div class="category" onclick="showPage('sciencePage')"><div class="emoji">🔬</div><h3>Science</h3><p>Future Innovation</p></div>
             </section>
 
-            <!-- TECH NEWS -->
             <section class="section-card" id="news">
                 <p class="label">LATEST</p>
                 <h2>Technology News</h2>
                 <div class="news-card">
                     <div class="news-icon">🚀</div>
-                    <div class="news-content">
+                    <div>
                         <h3>VIBGYOR Tech News</h3>
-                        <p>Technology news, discoveries, AI breakthroughs, gadgets and important updates.</p>
+                        <p style="font-size: 0.85rem; color: #a0a5b5; margin: 4px 0;">AI breakthroughs and updates.</p>
                         <small class="badge">Coming Soon</small>
                     </div>
                 </div>
             </section>
-
-            <!-- AI FEATURE -->
-            <section class="feature" id="ai">
-                <div class="feature-icon">🤖</div>
-                <div>
-                    <p class="label">FUTURE</p>
-                    <h2>Artificial Intelligence</h2>
-                    <p>Discover AI technology, breakthroughs and ideas.</p>
-                </div>
-            </section>
-
-            <!-- PROGRAMMING FEATURE -->
-            <section class="feature" id="programming">
-                <div class="feature-icon">💻</div>
-                <div>
-                    <p class="label">BUILD</p>
-                    <h2>Programming</h2>
-                    <p>Coding, software development and programming technologies.</p>
-                </div>
-            </section>
-
-            <!-- GADGETS FEATURE -->
-            <section class="feature" id="gadgets">
-                <div class="feature-icon">📱</div>
-                <div>
-                    <p class="label">TECH</p>
-                    <h2>Gadgets</h2>
-                    <p>Smartphones, computers, devices and innovation.</p>
-                </div>
-            </section>
-
-            <!-- COMING SOON -->
-            <section class="coming" id="more">
-                <p class="label">VIBGYOR FUTURE</p>
-                <h2>More Features<br>Coming Soon 🚀</h2>
-                <div class="coming-list">
-                    <span>📰 Tech News</span>
-                    <span>🤖 AI Hub</span>
-                    <span>📱 Gadget Reviews</span>
-                    <span>💻 Coding</span>
-                    <span>🔬 Science</span>
-                    <span>🌐 More</span>
-                </div>
-            </section>
-
         </main>
 
-        <!-- FOOTER -->
         <footer>
             <h3>VIBGYOR Technologies</h3>
             <p>Innovating Today • Building Tomorrow</p>
@@ -145,24 +59,83 @@
                 <a class="social-link" href="https://www.instagram.com/the__suhan__official__/" target="_blank">📸 Instagram</a>
                 <a class="social-link" href="https://github.com/syedsuhan921-netizen" target="_blank">🐙 GitHub</a>
             </div>
-            <p class="copyright">© 2026 VIBGYOR</p>
+            <p class="copyright" style="margin-top:15px; font-size:11px;">© 2026 VIBGYOR Technologies</p>
         </footer>
-
     </div>
 
-    <!-- SETTINGS PANEL (Hidden by default) -->
-    <div id="settingsPanel" class="settings-overlay" style="display:none;">
-        <div class="settings-modal">
-            <h3>Website Settings</h3>
-            <p>Customize your VIBGYOR experience</p>
-            <button onclick="toggleTheme()">Toggle Theme</button>
-            <button onclick="showAbout()">About Creator</button>
-            <button class="close-btn" onclick="closeSettings()">Close</button>
+    <!-- AI FULL PAGE -->
+    <div id="aiPage" class="page-view" style="display:none;">
+        <div class="settings-header"><h2>🤖 Artificial Intelligence</h2><button class="back-btn" onclick="showPage('website')">← Back</button></div>
+        <p style="color:#b0c4de; margin-bottom:20px;">Select an AI model to learn more:</p>
+        <div class="full-page-grid">
+            <div class="full-sub-card" onclick="alert('Gemini: Advanced multimodal AI developed by Google.')"><h4>✨ Gemini</h4><p>Google Multimodal AI model for reasoning and coding.</p></div>
+            <div class="full-sub-card" onclick="alert('ChatGPT: Conversational AI trained by OpenAI.')"><h4>🤖 ChatGPT</h4><p>OpenAI assistant for general intelligence and tasks.</p></div>
+            <div class="full-sub-card" onclick="alert('Claude: Safety-focused AI built by Anthropic.')"><h4>🧠 Claude</h4><p>Anthropic model built for text processing and analysis.</p></div>
+            <div class="full-sub-card" onclick="alert('DeepSeek: Open-weights reasoning model.')"><h4>🐋 DeepSeek</h4><p>High-efficiency open-weights logic and math model.</p></div>
         </div>
     </div>
 
-    <!-- Linking the separate JavaScript file -->
+    <!-- PROGRAMMING FULL PAGE -->
+    <div id="programmingPage" class="page-view" style="display:none;">
+        <div class="settings-header"><h2>💻 Programming Languages</h2><button class="back-btn" onclick="showPage('website')">← Back</button></div>
+        <p style="color:#b0c4de; margin-bottom:20px;">Select a technology to learn more:</p>
+        <div class="full-page-grid">
+            <div class="full-sub-card" onclick="alert('HTML & CSS: Core web markup and styling languages.')"><h4>🌐 HTML & CSS</h4><p>Core building blocks for structuring and styling web pages.</p></div>
+            <div class="full-sub-card" onclick="alert('JavaScript: Dynamic frontend programming language.')"><h4>⚡ JavaScript</h4><p>Brings interactivity and logic to web browsers.</p></div>
+            <div class="full-sub-card" onclick="alert('Python: Versatile language for AI and backend.')"><h4>🐍 Python</h4><p>Beginner-friendly language used in AI and automation.</p></div>
+            <div class="full-sub-card" onclick="alert('C++: High-performance systems language.')"><h4>⚡ C++</h4><p>High-performance coding for games and software.</p></div>
+        </div>
+    </div>
+
+    <!-- GADGETS FULL PAGE (20+ MOBILE BRANDS) -->
+    <div id="gadgetsPage" class="page-view" style="display:none;">
+        <div class="settings-header"><h2>📱 Mobile Companies & Gadgets</h2><button class="back-btn" onclick="showPage('website')">← Back</button></div>
+        <p style="color:#b0c4de; margin-bottom:20px;">Explore leading smartphone brands and manufacturers:</p>
+        <div class="full-page-grid">
+            <div class="full-sub-card" onclick="alert('Samsung: Galaxy flagship series, foldables, and displays.')"><h4>📱 Samsung</h4><p>Global leader in Galaxy smartphones and foldables.</p></div>
+            <div class="full-sub-card" onclick="alert('Apple: Premium iPhone ecosystem.')"><h4>🍏 Apple</h4><p>iPhone lineup powered by advanced Apple silicon.</p></div>
+            <div class="full-sub-card" onclick="alert('Google Pixel: Pure Android and AI photography.')"><h4>📸 Google Pixel</h4><p>Industry-leading computational photography.</p></div>
+            <div class="full-sub-card" onclick="alert('OnePlus: Fast and smooth flagship performance.')"><h4>⚡ OnePlus</h4><p>Flagship killers and high-performance devices.</p></div>
+            <div class="full-sub-card" onclick="alert('Xiaomi & Redmi: Feature-packed value.')"><h4>🔥 Xiaomi & Redmi</h4><p>High performance and affordability.</p></div>
+            <div class="full-sub-card" onclick="alert('Vivo: Sleek design and portrait cameras.')"><h4>📸 Vivo</h4><p>Professional portrait camera systems.</p></div>
+            <div class="full-sub-card" onclick="alert('Oppo: Camera tech and fast VOOC charging.')"><h4>💎 Oppo</h4><p>Stylish aesthetics and fast charging.</p></div>
+            <div class="full-sub-card" onclick="alert('Realme: Trendy design for youth.')"><h4>⚡ Realme</h4><p>Leap-forward performance and trendy tech.</p></div>
+            <div class="full-sub-card" onclick="alert('POCO: Gaming power at aggressive prices.')"><h4>🚀 POCO</h4><p>Extreme performance and gaming smartphones.</p></div>
+            <div class="full-sub-card" onclick="alert('iQOO: Monster performance chips.')"><h4>🧊 iQOO</h4><p>Dedicated gaming performance and cooling.</p></div>
+            <div class="full-sub-card" onclick="alert('Infinix: Massive battery and fast displays.')"><h4>🔋 Infinix</h4><p>Value-packed entertainment tech.</p></div>
+            <div class="full-sub-card" onclick="alert('Tecno: Vibrant styles and camera tech.')"><h4>📷 Tecno</h4><p>Innovative camera features and modern designs.</p></div>
+            <div class="full-sub-card" onclick="alert('Motorola: Clean Android and foldables.')"><h4>🦇 Motorola</h4><p>Reliable software and foldable Razr tech.</p></div>
+            <div class="full-sub-card" onclick="alert('Nothing: Transparent design and Glyph interface.')"><h4>👁️ Nothing</h4><p>Unique transparent design aesthetics.</p></div>
+            <div class="full-sub-card" onclick="alert('Huawei: HarmonyOS ecosystem.')"><h4>🔴 Huawei</h4><p>Advanced camera engineering.</p></div>
+            <div class="full-sub-card" onclick="alert('Honor: MagicOS capability.')"><h4>💫 Honor</h4><p>Sleek flagships with powerful displays.</p></div>
+            <div class="full-sub-card" onclick="alert('Sony Xperia: Alpha camera integration.')"><h4>🎥 Sony Xperia</h4><p>Cinematic displays and professional media.</p></div>
+            <div class="full-sub-card" onclick="alert('Asus ROG: Ultimate gaming hardware.')"><h4>🎮 Asus ROG</h4><p>Extreme mobile gaming rigs.</p></div>
+            <div class="full-sub-card" onclick="alert('Lenovo: Tablets and mobile integration.')"><h4>💻 Lenovo</h4><p>Versatile computing devices.</p></div>
+            <div class="full-sub-card" onclick="alert('ZTE & Nubia: Under-display cameras.')"><h4>🔮 ZTE & Nubia</h4><p>Pioneering gaming phones and cameras.</p></div>
+        </div>
+    </div>
+
+    <!-- SCIENCE FULL PAGE -->
+    <div id="sciencePage" class="page-view" style="display:none;">
+        <div class="settings-header"><h2>🔬 Science & Innovation</h2><button class="back-btn" onclick="showPage('website')">← Back</button></div>
+        <div class="settings-card"><h3>Future Innovations</h3><p style="font-size:13px; color:#8b96aa; margin-top:5px;">Discover scientific breakthroughs and space exploration.</p></div>
+    </div>
+
+    <!-- SETTINGS FULL PAGE -->
+    <div id="settingsPage" class="page-view" style="display:none;">
+        <div class="settings-header"><h2>⚙️ Website Settings</h2><button class="back-btn" onclick="showPage('website')">← Back</button></div>
+        <div class="settings-card">
+            <h3>🎨 Appearance</h3>
+            <p style="font-size:13px; color:#8b96aa; margin: 5px 0 15px 0;">Switch between dark and light color modes.</p>
+            <div class="settings-option"><span>Toggle Theme Mode</span><button class="toggle-btn" onclick="toggleTheme()">Switch Mode</button></div>
+        </div>
+        <div class="settings-card">
+            <h3>👤 About Creator</h3>
+            <p style="font-size:13px; color:#8b96aa; margin-top:5px;">VIBGYOR Technologies is designed and developed by Suhan.</p>
+        </div>
+    </div>
+
     <script src="script.js"></script>
 </body>
-                        </html>
-                        
+    </html>
+                                                                                                                                               
