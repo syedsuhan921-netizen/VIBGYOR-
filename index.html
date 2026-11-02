@@ -123,18 +123,71 @@
     </div>
 
     <!-- SETTINGS FULL PAGE -->
-    <div id="settingsPage" class="page-view" style="display:none;">
-        <div class="settings-header"><h2>⚙️ Website Settings</h2><button class="back-btn" onclick="showPage('website')">← Back</button></div>
-        <div class="settings-card">
-            <h3>🎨 Appearance</h3>
-            <p style="font-size:13px; color:#8b96aa; margin: 5px 0 15px 0;">Switch between dark and light color modes.</p>
-            <div class="settings-option"><span>Toggle Theme Mode</span><button class="toggle-btn" onclick="toggleTheme()">Switch Mode</button></div>
-        </div>
-        <div class="settings-card">
-            <h3>👤 About Creator</h3>
-            <p style="font-size:13px; color:#8b96aa; margin-top:5px;">VIBGYOR Technologies is designed and developed by Suhan.</p>
+    <div id="settingsPage" class="page-view" style="display: none;">
+    <h2>⚙️ Settings</h2>
+    
+    <!-- Theme Toggle Card -->
+    <div class="section-card">
+        <p class="label">APPEARANCE</p>
+        <h2>Theme Mode</h2>
+        <div style="margin-top: 10px; display: flex; align-items: center; justify-content: space-between;">
+            <span style="color: #a0a5b5; font-size: 0.9rem;">Switch Dark / Light Mode</span>
+            <button onclick="toggleTheme()" style="padding: 8px 16px; background: #00bcd4; border: none; border-radius: 6px; color: #fff; cursor: pointer; font-weight: bold;">Toggle Theme</button>
         </div>
     </div>
+
+    <!-- Quick Feedback / Feature Request Card (New Addition) -->
+    <div class="section-card" style="margin-top: 15px;">
+        <p class="label">FEEDBACK</p>
+        <h2>💬 Send Feedback</h2>
+        <div style="margin-top: 10px;">
+            <p style="color: #a0a5b5; font-size: 0.85rem; margin-bottom: 8px;">Found a bug or have an idea? Let us know!</p>
+            <input type="text" id="userFeedback" placeholder="Type your suggestion..." style="width: 100%; padding: 8px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; color: #fff; margin-bottom: 8px;">
+            <button onclick="alert('Thank you for your feedback!')" style="padding: 6px 12px; background: #22c55e; border: none; border-radius: 4px; color: #fff; cursor: pointer; font-size: 0.85rem;">Submit</button>
+        </div>
+    </div>
+
+    <!-- Developer & Social Support Card -->
+     <div id="settingsPage" class="page-view" style="display: none;">
+    <h2>⚙️ Settings</h2>
+    
+    <!-- Theme Toggle Card -->
+    <div class="section-card">
+        <p class="label">APPEARANCE</p>
+        <h2>Theme Mode</h2>
+        <div style="margin-top: 10px; display: flex; align-items: center; justify-content: space-between;">
+            <span style="color: #a0a5b5; font-size: 0.9rem;">Switch Dark / Light Mode</span>
+            <button onclick="toggleTheme()" style="padding: 8px 16px; background: #00bcd4; border: none; border-radius: 6px; color: #fff; cursor: pointer; font-weight: bold;">Toggle Theme</button>
+        </div>
+    </div>
+
+    <!-- Quick Feedback / Feature Request Card (New Addition) -->
+    <div class="section-card" style="margin-top: 15px;">
+        <p class="label">FEEDBACK</p>
+        <h2>💬 Send Feedback</h2>
+        <div style="margin-top: 10px;">
+            <p style="color: #a0a5b5; font-size: 0.85rem; margin-bottom: 8px;">Found a bug or have an idea? Let us know!</p>
+            <input type="text" id="userFeedback" placeholder="Type your suggestion..." style="width: 100%; padding: 8px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; color: #fff; margin-bottom: 8px;">
+            <button onclick="alert('Thank you for your feedback!')" style="padding: 6px 12px; background: #22c55e; border: none; border-radius: 4px; color: #fff; cursor: pointer; font-size: 0.85rem;">Submit</button>
+        </div>
+    </div>
+
+    <!-- Developer & Social Support Card -->
+    <div class="section-card" style="margin-top: 15px;">
+        <p class="label">ABOUT</p>
+        <h2>👨‍💻 Developer</h2>
+        <div style="margin-top: 10px; color: #a0a5b5; font-size: 0.9rem; line-height: 1.6;">
+            <p><strong>VIBGYOR Technologies</strong></p>
+            <p>VIBGYOR technologies website is designed and developed by Syed.Suhan</p>
+            <p style="margin-top: 10px;">
+                <strong>📸 Instagram:</strong> <a href="https://instagram.com/the__suhan__official__" target="_blank" style="color: #00bcd4;">@the__suhan__official__</a><br>
+                <strong>🏢 Company's Instagram:</strong> <a href="https://instagram.com/vibgyor_tech_" target="_blank" style="color: #00bcd4;">@vibgyor_tech_</a>
+            </p>
+            <p style="margin-top: 10px; font-style: italic;">⭐ Support us on these pages!</p>
+        </div>
+    </div>
+     </div>
+          
 
     <script src="script.js"></script>
 </body>
