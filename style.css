@@ -747,3 +747,9 @@ body.light-mode .quiz-option {
     font-size: 20px;
   }
 }
+
+/* Hide the Tech News navigation item and its Coming Soon section. */
+nav a[href="#news"],
+#news {
+  display: none !important;
+}
