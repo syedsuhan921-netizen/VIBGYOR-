@@ -64,6 +64,14 @@ window.showMessage = function () {
         }
     };
 
+    function closeModal() {
+        const modal = document.getElementById('gameModal');
+        if (modal) modal.classList.remove('active');
+        const body = document.getElementById('gameModalBody');
+        if (body) body.innerHTML = '';
+        if (typeof window.stopActiveGame === 'function') window.stopActiveGame();
+    }
+
     function openAiGuide(card) {
         const name = card.querySelector('h4')?.textContent?.toLowerCase() || '';
         const key = name.includes('gemini') ? 'gemini'
@@ -87,6 +95,11 @@ window.showMessage = function () {
     }
 
     document.addEventListener('click', event => {
+        // Close only when the explicit close control or the backdrop is clicked.
+        if (event.target.closest('#gameModal .modal-close') || event.target.id === 'gameModal') {
+            closeModal();
+            return;
+        }
         const aiCard = event.target.closest('#aiPage .full-sub-card');
         if (!aiCard || event.target.closest('.like-btn')) return;
         event.preventDefault();
@@ -114,6 +127,12 @@ window.showMessage = function () {
         @media(max-width:620px) { .snake-controls { grid-template-columns:repeat(3,72px); grid-template-rows:repeat(2,62px); } .snake-controls .arrow-btn { min-width:72px; min-height:62px; } }
     `;
     document.head.appendChild(style);
+
+    // Ensure the modal close button works even if the existing game script hasn't loaded.
+    document.addEventListener('DOMContentLoaded', () => {
+        const closeButton = document.querySelector('#gameModal .modal-close');
+        if (closeButton) closeButton.addEventListener('click', closeModal);
+    });
 
     // Load the existing game code after synchronous navigation is ready.
     const legacyScript = document.createElement('script');
