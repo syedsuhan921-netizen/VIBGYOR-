@@ -1,711 +1,177 @@
-function showPage(pageId) {
-    const pages = document.querySelectorAll('.page-view');
-    pages.forEach(page => page.style.display = 'none');
-    document.getElementById(pageId).style.display = 'block';
-    window.scrollTo(0, 0);
-}
+/* Load the existing game implementation, then add the requested Snake and AI-card improvements. */
+(() => {
+    const legacyScript = document.createElement('script');
+    legacyScript.src = 'https://raw.githubusercontent.com/syedsuhan921-netizen/VIBGYOR-/dc387cb95d29fda43095f73bb0d1aee28429d638/script.js';
 
-function toggleTheme() {
-    document.body.classList.toggle('light-mode');
-}
-
-function showMessage() {
-    alert('Welcome to VIBGYOR Technologies! Click any category card to open its dedicated full page.');
-}
-
-let activeGameTimer = null;
-let activeKeyHandler = null;
-
-function stopActiveGame() {
-    if (activeGameTimer) {
-        clearInterval(activeGameTimer);
-        activeGameTimer = null;
-    }
-    if (activeKeyHandler) {
-        window.removeEventListener('keydown', activeKeyHandler);
-        activeKeyHandler = null;
-    }
-}
-
-function closeGameModal() {
-    const modal = document.getElementById('gameModal');
-    if (modal) modal.classList.remove('active');
-    stopActiveGame();
-    const modalBody = document.getElementById('gameModalBody');
-    if (modalBody) modalBody.innerHTML = '';
-}
-
-function renderGameModal(gameKey) {
-    const modalBody = document.getElementById('gameModalBody');
-    const modal = document.getElementById('gameModal');
-    if (!modalBody || !modal) return;
-
-    stopActiveGame();
-
-    const templates = {
-        snake: `
-            <div class="game-shell">
-                <div class="game-header">
-                    <h2 class="game-title">🐍 Snake Game</h2>
-                    <div class="game-score" id="snakeScore">Score: 0</div>
-                </div>
-                <div class="game-box">
-                    <div id="snakeBoard" class="snake-board" aria-label="Snake board"></div>
-                </div>
-                <div class="snake-controls">
-                    <button class="arrow-btn" data-dir="up">↑ Up</button>
-                    <button class="arrow-btn" data-dir="left">← Left</button>
-                    <button class="arrow-btn" data-dir="down">↓ Down</button>
-                    <button class="arrow-btn" data-dir="right">→ Right</button>
-                </div>
-                <button class="play-now-btn" onclick="startSnakeGame();">Play Now</button>
-            </div>
-        `,
-        dragon: `
-            <div class="game-shell">
-                <div class="game-header">
-                    <h2 class="game-title">🐉 Dragon Jump</h2>
-                    <div class="game-score" id="dragonScore">Score: 0</div>
-                </div>
-                <div id="dragonGame" class="dino-runner" tabindex="0">
-                    <div id="dragon" class="dragon">🐉</div>
-                    <div id="dragonObstacle" class="obstacle"></div>
-                    <div class="ground"></div>
-                </div>
-                <div class="snake-controls">
-                    <button class="play-now-btn" onclick="startDragonGame();">Play Now</button>
-                    <button class="arrow-btn" onclick="jumpDragon();">Jump</button>
-                </div>
-            </div>
-        `,
-        gobang: `
-            <div class="game-shell">
-                <div class="game-header">
-                    <h2 class="game-title">⚫ Gobang</h2>
-                    <div class="game-score" id="gobanStatus">Turn: X</div>
-                </div>
-                <div class="game-box">
-                    <div id="gobanBoard" class="goban-board"></div>
-                </div>
-                <button class="play-now-btn" onclick="resetGobang();">Restart</button>
-            </div>
-        `,
-        tictactoe: `
-            <div class="game-shell">
-                <div class="game-header">
-                    <h2 class="game-title">⭕ Tic-Tac-Toe</h2>
-                    <div class="game-score" id="tttStatus">Turn: X</div>
-                </div>
-                <div class="game-box">
-                    <div id="tttBoard" class="ttt-board"></div>
-                </div>
-                <button class="play-now-btn" onclick="startTicTacToe();">Restart</button>
-            </div>
-        `,
-        memory: `
-            <div class="game-shell">
-                <div class="game-header">
-                    <h2 class="game-title">🧠 Memory Match</h2>
-                    <div class="game-score" id="memoryStatus">Moves: 0</div>
-                </div>
-                <div class="game-box">
-                    <div id="memoryBoard" class="memory-board"></div>
-                </div>
-                <button class="play-now-btn" onclick="startMemoryMatch();">Restart</button>
-            </div>
-        `,
-        guess: `
-            <div class="game-shell">
-                <div class="game-header">
-                    <h2 class="game-title">🎯 Guess Number</h2>
-                    <div class="game-score" id="guessStatus">Try to guess</div>
-                </div>
-                <div class="guess-box">
-                    <input id="guessInput" class="guess-input" type="number" min="1" max="20" placeholder="Enter 1 to 20" />
-                    <button class="guess-btn" onclick="submitGuess();">Guess</button>
-                    <p id="guessResult">I picked a number between 1 and 20.</p>
-                    <button class="play-now-btn" onclick="startGuessNumber();">New Game</button>
-                </div>
-            </div>
-        `,
-        quiz: `
-            <div class="game-shell">
-                <div class="game-header">
-                    <h2 class="game-title">❓ Quick Quiz</h2>
-                    <div class="game-score" id="quizScore">Score: 0</div>
-                </div>
-                <div id="quizBox"></div>
-            </div>
-        `
-    };
-
-    modalBody.innerHTML = templates[gameKey] || templates.quiz;
-    modal.classList.add('active');
-
-    switch (gameKey) {
-        case 'snake':
-            startSnakeGame();
-            break;
-        case 'dragon':
-            startDragonGame();
-            break;
-        case 'gobang':
-            resetGobang();
-            break;
-        case 'tictactoe':
-            startTicTacToe();
-            break;
-        case 'memory':
-            startMemoryMatch();
-            break;
-        case 'guess':
-            startGuessNumber();
-            break;
-        case 'quiz':
-            setupQuiz();
-            break;
-        default:
-            setupQuiz();
-            break;
-    }
-}
-
-function bindGameButtons() {
-    const gameButtons = document.querySelectorAll('.game-launch-btn');
-    gameButtons.forEach(button => {
-        button.addEventListener('click', () => renderGameModal(button.dataset.game));
-    });
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-    bindGameButtons();
-    const modalClose = document.querySelector('.modal-close');
-    if (modalClose) modalClose.addEventListener('click', closeGameModal);
-});
-
-function startSnakeGame() {
-    const board = document.getElementById('snakeBoard');
-    if (!board) return;
-
-    board.innerHTML = '';
-    const boardSize = 10;
-    const cells = [];
-
-    for (let i = 0; i < boardSize * boardSize; i++) {
-        const cell = document.createElement('div');
-        cell.className = 'snake-cell';
-        board.appendChild(cell);
-        cells.push(cell);
-    }
-
-    let snake = [
-        { x: 4, y: 5 },
-        { x: 3, y: 5 },
-        { x: 2, y: 5 }
-    ];
-    let direction = { x: 1, y: 0 };
-    let nextDirection = { x: 1, y: 0 };
-    let food = { x: 7, y: 5 };
-    let score = 0;
-    let running = true;
-
-    const scoreEl = document.getElementById('snakeScore');
-
-    function updateScore() {
-        if (scoreEl) scoreEl.textContent = `Score: ${score}`;
-    }
-
-    function placeFood() {
-        let newFood;
-        do {
-            newFood = {
-                x: Math.floor(Math.random() * boardSize),
-                y: Math.floor(Math.random() * boardSize)
-            };
-        } while (snake.some(seg => seg.x === newFood.x && seg.y === newFood.y));
-        food = newFood;
-    }
-
-    function renderBoard() {
-        const filled = Array(boardSize * boardSize).fill(false);
-        snake.forEach(seg => {
-            const idx = seg.y * boardSize + seg.x;
-            if (idx >= 0 && idx < filled.length) filled[idx] = true;
-        });
-
-        cells.forEach((cell, index) => {
-            cell.classList.remove('snake', 'food');
-            if (filled[index]) cell.classList.add('snake');
-            if (index === food.y * boardSize + food.x) cell.classList.add('food');
-        });
-    }
-
-    function tick() {
-        if (!running) return;
-        direction = nextDirection;
-        const head = { x: snake[0].x + direction.x, y: snake[0].y + direction.y };
-
-        const hitWall = head.x < 0 || head.x >= boardSize || head.y < 0 || head.y >= boardSize;
-        const hitSelf = snake.some(seg => seg.x === head.x && seg.y === head.y);
-
-        if (hitWall || hitSelf) {
-            running = false;
-            alert('Game over! Snake crashed.');
-            return;
-        }
-
-        snake.unshift(head);
-
-        if (head.x === food.x && head.y === food.y) {
-            score += 10;
-            placeFood();
-            updateScore();
-        } else {
-            snake.pop();
-        }
-
-        renderBoard();
-    }
-
-    function handleDirectionChange(nextDir) {
-        const isOpposite = direction.x + nextDir.x === 0 && direction.y + nextDir.y === 0;
-        if (!isOpposite) nextDirection = nextDir;
-    }
-
-    activeKeyHandler = (event) => {
-        const map = {
-            ArrowUp: { x: 0, y: -1 },
-            ArrowDown: { x: 0, y: 1 },
-            ArrowLeft: { x: -1, y: 0 },
-            ArrowRight: { x: 1, y: 0 },
-            w: { x: 0, y: -1 },
-            s: { x: 0, y: 1 },
-            a: { x: -1, y: 0 },
-            d: { x: 1, y: 0 }
-        };
-
-        const dir = map[event.key] || map[event.key.toLowerCase()];
-        if (dir) handleDirectionChange(dir);
-    };
-
-    window.addEventListener('keydown', activeKeyHandler);
-    document.querySelectorAll('.arrow-btn').forEach(button => {
-        const dirMap = {
-            up: { x: 0, y: -1 },
-            down: { x: 0, y: 1 },
-            left: { x: -1, y: 0 },
-            right: { x: 1, y: 0 }
-        };
-        button.addEventListener('click', () => handleDirectionChange(dirMap[button.dataset.dir]));
-    });
-
-    updateScore();
-    renderBoard();
-    activeGameTimer = setInterval(tick, 180);
-}
-
-function startDragonGame() {
-    const dragon = document.getElementById('dragon');
-    const obstacle = document.getElementById('dragonObstacle');
-    const runner = document.getElementById('dragonGame');
-    if (!dragon || !obstacle || !runner) return;
-
-    let dragonBottom = 30;
-    let velocity = 0;
-    let gravity = 0.8;
-    let score = 0;
-    let gameOver = false;
-    let obstacleX = runner.clientWidth + 30;
-
-    const scoreEl = document.getElementById('dragonScore');
-
-    function updateScore() {
-        if (scoreEl) scoreEl.textContent = `Score: ${score}`;
-    }
-
-    function jump() {
-        if (gameOver) return;
-        if (dragonBottom <= 30) velocity = 12;
-    }
-
-    function checkCollision() {
-        const dragonRect = dragon.getBoundingClientRect();
-        const obstacleRect = obstacle.getBoundingClientRect();
-        return !(dragonRect.right < obstacleRect.left + 6 || dragonRect.left > obstacleRect.right - 6 || dragonRect.bottom < obstacleRect.top + 10 || dragonRect.top > obstacleRect.bottom - 4);
-    }
-
-    function tick() {
-        if (gameOver) return;
-
-        velocity -= gravity;
-        dragonBottom += velocity;
-
-        if (dragonBottom < 30) {
-            dragonBottom = 30;
-            velocity = 0;
-        }
-
-        obstacleX -= 5;
-        if (obstacleX < -40) {
-            obstacleX = runner.clientWidth + 40;
-            score += 10;
-            updateScore();
-        }
-
-        dragon.style.bottom = `${dragonBottom}px`;
-        obstacle.style.left = `${obstacleX}px`;
-
-        if (checkCollision()) {
-            gameOver = true;
-            alert('Game over! Dragon hit an obstacle.');
-            return;
-        }
-    }
-
-    dragon.style.bottom = `${dragonBottom}px`;
-    obstacle.style.left = `${obstacleX}px`;
-    updateScore();
-
-    activeKeyHandler = (event) => {
-        if (event.code === 'Space') {
-            event.preventDefault();
-            jump();
-        }
-    };
-
-    window.addEventListener('keydown', activeKeyHandler);
-    activeGameTimer = setInterval(tick, 30);
-    window.jumpDragon = jump;
-}
-
-function resetGobang() {
-    const board = document.getElementById('gobanBoard');
-    if (!board) return;
-
-    board.innerHTML = '';
-    const boardSize = 15;
-    let currentPlayer = 'X';
-    let winner = null;
-
-    const statusEl = document.getElementById('gobanStatus');
-    if (statusEl) statusEl.textContent = 'Turn: X';
-
-    function checkWin(boardState, row, col, value, size) {
-        const directions = [[0, 1], [1, 0], [1, 1], [1, -1]];
-
-        for (const [dx, dy] of directions) {
-            let count = 1;
-            let r = row + dx;
-            let c = col + dy;
-
-            while (r >= 0 && r < size && c >= 0 && c < size && boardState[r * size + c] === value) {
-                count += 1;
-                r += dx;
-                c += dy;
+    legacyScript.addEventListener('load', () => {
+        const style = document.createElement('style');
+        style.textContent = `
+            .snake-controls {
+                display: grid;
+                grid-template-columns: repeat(3, 64px);
+                grid-template-rows: repeat(2, 56px);
+                gap: 8px;
+                justify-content: center;
             }
-
-            r = row - dx;
-            c = col - dy;
-            while (r >= 0 && r < size && c >= 0 && c < size && boardState[r * size + c] === value) {
-                count += 1;
-                r -= dx;
-                c -= dy;
+            .snake-controls .arrow-btn {
+                min-width: 64px;
+                min-height: 56px;
+                padding: 8px;
+                border: 1px solid rgba(0,229,255,0.45);
+                border-radius: 14px;
+                background: rgba(0,229,255,0.18);
+                color: inherit;
+                font-size: 1.65rem;
+                touch-action: manipulation;
             }
-
-            if (count >= 5) return true;
-        }
-
-        return false;
-    }
-
-    for (let i = 0; i < boardSize * boardSize; i++) {
-        const cell = document.createElement('button');
-        cell.type = 'button';
-        cell.className = 'goban-cell empty';
-
-        cell.addEventListener('click', () => {
-            if (winner || cell.textContent) return;
-
-            cell.textContent = currentPlayer;
-            cell.classList.remove('empty');
-            cell.classList.add(currentPlayer.toLowerCase());
-
-            const row = Math.floor(i / boardSize);
-            const col = i % boardSize;
-            const boardState = Array.from(board.children).map(item => item.textContent || '');
-
-            if (checkWin(boardState, row, col, currentPlayer, boardSize)) {
-                winner = currentPlayer;
-                if (statusEl) statusEl.textContent = `Winner: ${winner}`;
-                alert(`Player ${winner} wins!`);
-                return;
+            .snake-controls .arrow-btn[data-dir="up"] { grid-column: 2; grid-row: 1; }
+            .snake-controls .arrow-btn[data-dir="left"] { grid-column: 1; grid-row: 2; }
+            .snake-controls .arrow-btn[data-dir="down"] { grid-column: 2; grid-row: 2; }
+            .snake-controls .arrow-btn[data-dir="right"] { grid-column: 3; grid-row: 2; }
+            .snake-controls .arrow-btn:hover,
+            .snake-controls .arrow-btn:active {
+                background: #00bcd4;
+                color: #06131d;
             }
-
-            currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
-            if (statusEl) statusEl.textContent = `Turn: ${currentPlayer}`;
-        });
-
-        board.appendChild(cell);
-    }
-}
-
-function startTicTacToe() {
-    const board = document.getElementById('tttBoard');
-    if (!board) return;
-
-    board.innerHTML = '';
-    const cells = Array(9).fill('');
-    let currentPlayer = 'X';
-    let winner = null;
-
-    const statusEl = document.getElementById('tttStatus');
-    if (statusEl) statusEl.textContent = 'Turn: X';
-
-    function checkWin(arr) {
-        const lines = [
-            [0,1,2],[3,4,5],[6,7,8],
-            [0,3,6],[1,4,7],[2,5,8],
-            [0,4,8],[2,4,6]
-        ];
-
-        for (const [a,b,c] of lines) {
-            if (arr[a] && arr[a] === arr[b] && arr[a] === arr[c]) return arr[a];
-        }
-
-        return null;
-    }
-
-    for (let i = 0; i < 9; i++) {
-        const cell = document.createElement('button');
-        cell.type = 'button';
-        cell.className = 'ttt-cell';
-        cell.addEventListener('click', () => {
-            if (winner || cells[i]) return;
-            cells[i] = currentPlayer;
-            cell.textContent = currentPlayer;
-
-            const result = checkWin(cells);
-            if (result) {
-                winner = result;
-                if (statusEl) statusEl.textContent = `Winner: ${winner}`;
-                alert(`Player ${winner} wins!`);
-                return;
+            .ai-detail { display: grid; gap: 14px; padding-top: 12px; line-height: 1.65; }
+            .ai-detail h2 { color: #00e5ff; margin-bottom: 2px; }
+            .ai-detail h3 { color: #7dd3fc; margin-bottom: 4px; }
+            .ai-detail p, .ai-detail li { color: #d3dbe7; }
+            body.light-mode .ai-detail p, body.light-mode .ai-detail li { color: #334155; }
+            .ai-detail ul { padding-left: 22px; }
+            .ai-detail a { color: #00e5ff; }
+            body.light-mode .ai-detail a { color: #007f91; }
+            .ai-note { font-size: .9rem; opacity: .85; }
+            @media (max-width: 620px) {
+                .snake-controls { grid-template-columns: repeat(3, 72px); grid-template-rows: repeat(2, 62px); }
+                .snake-controls .arrow-btn { min-width: 72px; min-height: 62px; }
             }
-
-            const isDraw = cells.every(Boolean);
-            if (isDraw) {
-                if (statusEl) statusEl.textContent = 'Draw!';
-                alert('Draw game!');
-                return;
-            }
-
-            currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
-            if (statusEl) statusEl.textContent = `Turn: ${currentPlayer}`;
-        });
-
-        board.appendChild(cell);
-    }
-}
-
-function startMemoryMatch() {
-    const board = document.getElementById('memoryBoard');
-    if (!board) return;
-
-    board.innerHTML = '';
-    const symbols = ['🍉', '🍊', '🍋', '🍇', '🍒', '🍓', '🍋', '🍉', '🍊', '🍇', '🍒', '🍓'];
-    const shuffled = [...symbols].sort(() => Math.random() - 0.5);
-    let flipped = [];
-    let matched = 0;
-    let moves = 0;
-    let lock = false;
-
-    const statusEl = document.getElementById('memoryStatus');
-    if (statusEl) statusEl.textContent = 'Moves: 0';
-
-    const buildCard = (value, index) => {
-        const card = document.createElement('button');
-        card.type = 'button';
-        card.className = 'memory-card';
-        card.textContent = '?';
-        card.dataset.value = value;
-        card.dataset.index = index;
-
-        card.addEventListener('click', () => {
-            if (lock || card.classList.contains('matched') || flipped.includes(card)) return;
-            card.textContent = value;
-            flipped.push(card);
-
-            if (flipped.length === 2) {
-                moves += 1;
-                if (statusEl) statusEl.textContent = `Moves: ${moves}`;
-                lock = true;
-
-                const [first, second] = flipped;
-                if (first.dataset.value === second.dataset.value) {
-                    first.classList.add('matched');
-                    second.classList.add('matched');
-                    matched += 2;
-                    flipped = [];
-                    lock = false;
-
-                    if (matched === shuffled.length) {
-                        alert('You matched everything! Great job!');
-                    }
-                } else {
-                    setTimeout(() => {
-                        first.textContent = '?';
-                        second.textContent = '?';
-                        flipped = [];
-                        lock = false;
-                    }, 700);
-                }
-            }
-        });
-
-        return card;
-    };
-
-    shuffled.forEach((value, index) => {
-        board.appendChild(buildCard(value, index));
-    });
-}
-
-function startGuessNumber() {
-    const input = document.getElementById('guessInput');
-    const result = document.getElementById('guessResult');
-    const status = document.getElementById('guessStatus');
-    if (!input || !result || !status) return;
-
-    let target = Math.floor(Math.random() * 20) + 1;
-    let attempts = 0;
-    let finished = false;
-
-    status.textContent = 'Guessing...';
-    result.textContent = 'I picked a number between 1 and 20.';
-    input.value = '';
-    input.disabled = false;
-
-    window.submitGuess = function () {
-        if (finished) return;
-
-        const guess = Number(input.value);
-        if (!guess || guess < 1 || guess > 20) {
-            result.textContent = 'Please enter a number from 1 to 20.';
-            return;
-        }
-
-        attempts += 1;
-
-        if (guess < target) {
-            result.textContent = 'Too low! Try a higher number.';
-        } else if (guess > target) {
-            result.textContent = 'Too high! Try a lower number.';
-        } else {
-            finished = true;
-            result.textContent = `Correct! You guessed it in ${attempts} attempts.`;
-            status.textContent = 'You win!';
-            input.disabled = true;
-            return;
-        }
-
-        if (attempts >= 6) {
-            finished = true;
-            result.textContent = `Out of attempts! The number was ${target}.`;
-            status.textContent = 'Game over';
-            input.disabled = true;
-        } else {
-            status.textContent = `Attempts: ${attempts}`;
-        }
-    };
-}
-
-function setupQuiz() {
-    const quizBox = document.getElementById('quizBox');
-    if (!quizBox) return;
-
-    const questions = [
-        {
-            question: 'Which language is most used for interactive websites?',
-            options: ['HTML', 'CSS', 'JavaScript', 'SQL'],
-            answer: 'JavaScript'
-        },
-        {
-            question: 'Which company created ChatGPT?',
-            options: ['Google', 'OpenAI', 'Microsoft', 'Meta'],
-            answer: 'OpenAI'
-        },
-        {
-            question: 'What does AI stand for?',
-            options: ['Advanced Interface', 'Artificial Intelligence', 'Automated Input', 'Algorithmic Index'],
-            answer: 'Artificial Intelligence'
-        },
-        {
-            question: 'Which of these is a game genre?',
-            options: ['Action', 'Water', 'Cloud', 'Pen'],
-            answer: 'Action'
-        }
-    ];
-
-    let score = 0;
-    let currentIndex = 0;
-
-    function showQuestion() {
-        const question = questions[currentIndex];
-
-        if (!question) {
-            quizBox.innerHTML = `<h3>Quiz complete!</h3><p class="game-status">Final score: ${score}/${questions.length}</p><button class="play-now-btn" onclick="setupQuiz();">Play again</button>`;
-            return;
-        }
-
-        quizBox.innerHTML = `
-            <div class="game-status">Question ${currentIndex + 1}/${questions.length}</div>
-            <h3>${question.question}</h3>
-            <div class="quiz-options">
-                ${question.options.map(option => `<button class="quiz-option" data-answer="${option}">${option}</button>`).join('')}
-            </div>
         `;
+        document.head.appendChild(style);
 
-        document.querySelectorAll('.quiz-option').forEach(button => {
-            button.addEventListener('click', () => {
-                const selected = button.dataset.answer;
-                if (selected === question.answer) score += 1;
+        // The original Snake game updates every 180 ms. Increase that interval to 320 ms.
+        const nativeSetInterval = window.setInterval.bind(window);
+        window.setInterval = (callback, delay, ...args) =>
+            nativeSetInterval(callback, delay === 180 ? 320 : delay, ...args);
 
-                const scoreEl = document.getElementById('quizScore');
-                if (scoreEl) scoreEl.textContent = `Score: ${score}`;
+        const originalRenderGameModal = window.renderGameModal;
+        window.renderGameModal = function (gameKey) {
+            originalRenderGameModal(gameKey);
+            if (gameKey !== 'snake') return;
 
-                currentIndex += 1;
-                showQuestion();
+            const directions = {
+                up: ['↑', 'Move up'],
+                left: ['←', 'Move left'],
+                down: ['↓', 'Move down'],
+                right: ['→', 'Move right']
+            };
+            document.querySelectorAll('#gameModalBody .arrow-btn[data-dir]').forEach(button => {
+                const [label, accessibleName] = directions[button.dataset.dir];
+                button.type = 'button';
+                button.textContent = label;
+                button.setAttribute('aria-label', accessibleName);
+                button.title = accessibleName;
             });
-        });
-    }
+            const restartButton = document.querySelector('#gameModalBody .game-shell > .play-now-btn');
+            if (restartButton) {
+                restartButton.type = 'button';
+                restartButton.textContent = 'Restart Game';
+            }
+        };
 
-    const scoreEl = document.getElementById('quizScore');
-    if (scoreEl) scoreEl.textContent = 'Score: 0';
-    showQuestion();
-}
+        const aiGuides = {
+            gemini: {
+                title: 'Google Gemini',
+                intro: 'Gemini is Google’s family of generative AI models and the assistant built around them. It can work with text, images, audio, video, and code, depending on the model and product.',
+                models: 'The main model tiers are Gemini Pro (more capable for complex tasks), Gemini Flash (optimized for speed and efficiency), and Gemini Nano (smaller models designed for supported on-device tasks). Specific model versions and availability change over time.',
+                working: 'Gemini models are trained on large collections of data to learn patterns and predict useful outputs. Multimodal versions can process more than text; the product may also use tools such as search or code execution when available.',
+                merits: ['Useful across writing, summarizing, brainstorming, coding, and image or audio tasks.', 'Google product integration and a range of speed/capability tiers.', 'Some Nano-powered features can run on supported devices.'],
+                limits: 'It can still make mistakes, misunderstand context, or produce outdated information. Check important claims and be mindful of what you share with any AI service.',
+                link: 'https://ai.google.dev/gemini-api/docs/models'
+            },
+            chatgpt: {
+                title: 'OpenAI ChatGPT',
+                intro: 'ChatGPT is OpenAI’s conversational AI product, powered by different GPT model options. It can help explain topics, draft and revise writing, analyze information, and assist with coding.',
+                models: 'OpenAI offers general-purpose GPT models, reasoning-focused models for more involved problems, and smaller or faster options. The available model names and capabilities vary by plan and are updated regularly; check OpenAI’s model catalog for the current list.',
+                working: 'GPT models learn statistical patterns from training data and generate responses one piece at a time. Depending on the selected model and enabled features, ChatGPT may also analyze images or files, browse, or use other tools.',
+                merits: ['Flexible for conversation, explanations, writing, analysis, and programming.', 'Different model choices can balance response speed and deeper reasoning.', 'A broad set of optional tools and multimodal features may be available.'],
+                limits: 'Fluent answers are not guaranteed to be correct. Verify consequential advice, calculations, and citations; features depend on the selected model, plan, and settings.',
+                link: 'https://platform.openai.com/docs/models'
+            },
+            claude: {
+                title: 'Anthropic Claude',
+                intro: 'Claude is Anthropic’s family of AI assistants and language models, designed for conversation, writing, analysis, and software development.',
+                models: 'Claude models are commonly grouped into Opus (the most capable tier), Sonnet (a balance of capability and speed), and Haiku (a faster, lighter tier). Exact model versions and availability change, so consult Anthropic’s model page for current details.',
+                working: 'Claude uses large neural language models trained to understand and generate text. Depending on the model and product, it can also work with images, long documents, and tools; safety training helps guide how it responds.',
+                merits: ['Strong for drafting, editing, summarizing, and working through long documents.', 'The model tiers offer different speed and capability trade-offs.', 'Can be helpful for coding and structured analysis.'],
+                limits: 'Claude can make factual errors and may miss details in lengthy material. Review outputs, especially code and high-impact decisions.',
+                link: 'https://docs.anthropic.com/en/docs/about-claude/models/overview'
+            },
+            deepseek: {
+                title: 'DeepSeek',
+                intro: 'DeepSeek is an AI company whose models include general-purpose language models and models tuned for reasoning and technical tasks.',
+                models: 'Notable model families include DeepSeek-V for general language and coding tasks and DeepSeek-R for reasoning-focused tasks. DeepSeek also publishes versions and distilled variants with different sizes and capabilities; names, releases, and access options evolve.',
+                working: 'Like other language models, DeepSeek models generate text from learned patterns. Reasoning-focused versions are trained to spend more computation on multi-step problems. Some releases provide weights for developers to run or adapt under the applicable license.',
+                merits: ['Can be useful for coding, technical questions, and multi-step reasoning.', 'Some model releases offer developers more control over deployment and experimentation.', 'Different sizes and variants can suit different resource constraints.'],
+                limits: 'Quality, privacy, hosting, and licensing depend on the specific model and whether it is used through a hosted service or self-hosted. Independently verify important results.',
+                link: 'https://github.com/deepseek-ai'
+            },
+            copilot: {
+                title: 'GitHub Copilot',
+                intro: 'GitHub Copilot is an AI coding assistant, not a single standalone model. It helps developers write, understand, test, and improve code inside supported development tools.',
+                models: 'Copilot can offer different underlying models from providers such as OpenAI, Anthropic, and Google, depending on the feature, plan, and model selector available in your account. The catalog changes; see GitHub’s current documentation for supported models.',
+                working: 'Copilot sends a prompt plus relevant context—such as nearby code, open files, or a chat question—to a selected model. The model generates suggestions or explanations, which the developer can review and accept, edit, or reject.',
+                merits: ['Keeps coding help close to the editor and project context.', 'Can suggest code, explain unfamiliar files, and help draft tests or documentation.', 'Model choices can provide different strengths for particular tasks.'],
+                limits: 'Suggestions may be incorrect, insecure, or inconsistent with a project’s requirements. Review and test generated code, and do not share secrets or sensitive data.',
+                link: 'https://docs.github.com/en/copilot/reference/ai-models/supported-models'
+            }
+        };
 
-window.addEventListener('click', (event) => {
-    const modal = document.getElementById('gameModal');
-    if (modal && modal.classList.contains('active') && event.target === modal) {
-        closeGameModal();
-    }
-});
+        function showAIGuide(card) {
+            const heading = card.querySelector('h4')?.textContent || '';
+            const key = heading.toLowerCase().includes('gemini') ? 'gemini'
+                : heading.toLowerCase().includes('chatgpt') ? 'chatgpt'
+                : heading.toLowerCase().includes('claude') ? 'claude'
+                : heading.toLowerCase().includes('deepseek') ? 'deepseek'
+                : heading.toLowerCase().includes('copilot') ? 'copilot' : null;
+            const guide = aiGuides[key];
+            if (!guide) return;
 
-window.jumpDragon = function () {
-    const dragon = document.getElementById('dragon');
-    if (!dragon) return;
-    const currentBottom = Number(dragon.style.bottom.replace('px', '')) || 30;
-    if (currentBottom <= 30) {
-        const runner = document.getElementById('dragonGame');
-        const gameState = runner ? runner.__dragonState : null;
-        if (gameState) {
-            gameState.velocity = 12;
-        } else if (window.__dragonVelocity !== undefined) {
-            window.__dragonVelocity = 12;
+            const modal = document.getElementById('gameModal');
+            const modalBody = document.getElementById('gameModalBody');
+            if (!modal || !modalBody) return;
+            if (typeof window.closeGameModal === 'function') window.closeGameModal();
+            modalBody.innerHTML = `
+                <article class="ai-detail">
+                    <h2>${guide.title}</h2>
+                    <p>${guide.intro}</p>
+                    <section><h3>Model families</h3><p>${guide.models}</p></section>
+                    <section><h3>How it works</h3><p>${guide.working}</p></section>
+                    <section><h3>Main merits</h3><ul>${guide.merits.map(item => `<li>${item}</li>`).join('')}</ul></section>
+                    <section><h3>Things to keep in mind</h3><p>${guide.limits}</p></section>
+                    <p class="ai-note">Model lineups and features change. For the latest official details, see <a href="${guide.link}" target="_blank" rel="noopener noreferrer">the provider’s documentation</a>.</p>
+                </article>`;
+            modal.classList.add('active');
         }
-    }
-};
 
-window.addEventListener('load', () => {
-    bindGameButtons();
-});
+        // Capture card clicks before their old alert handlers; preserve the like buttons.
+        document.addEventListener('click', event => {
+            if (event.target.closest('#aiPage .like-btn')) return;
+            const card = event.target.closest('#aiPage .full-sub-card');
+            if (!card) return;
+            event.preventDefault();
+            event.stopImmediatePropagation();
+            showAIGuide(card);
+        }, true);
+
+        const closeButton = document.querySelector('#gameModal .modal-close');
+        if (closeButton) closeButton.addEventListener('click', window.closeGameModal);
+        // Dynamically loaded scripts may miss DOMContentLoaded, so bind game launchers now.
+        if (typeof window.bindGameButtons === 'function') window.bindGameButtons();
+    });
+
+    legacyScript.addEventListener('error', () => {
+        console.error('The existing VIBGYOR game script could not be loaded.');
+    });
+    document.head.appendChild(legacyScript);
+})();
