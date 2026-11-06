@@ -1,4 +1,5 @@
-// Define navigation immediately: inline buttons must work even while game code loads.
+// Keep page navigation and games self-contained so a blocked external script cannot
+// leave the Games card or Play Now buttons unresponsive.
 window.showPage = function (pageId) {
     const page = document.getElementById(pageId);
     if (!page) return;
@@ -6,157 +7,115 @@ window.showPage = function (pageId) {
     page.style.display = 'block';
     window.scrollTo(0, 0);
 };
-
-window.toggleTheme = function () {
-    document.body.classList.toggle('light-mode');
-};
-
-window.showMessage = function () {
-    alert('Welcome to VIBGYOR Technologies! Click any category card to open its dedicated full page.');
-};
+window.toggleTheme = () => document.body.classList.toggle('light-mode');
+window.showMessage = () => alert('Welcome to VIBGYOR Technologies! Click any category card to open its dedicated full page.');
 
 (() => {
-    const aiGuides = {
-        gemini: {
-            title: 'Google Gemini',
-            intro: 'Gemini is Google’s family of generative AI models and the assistant built around them. Depending on the model, it can work with text, images, audio, video, and code.',
-            models: 'Gemini model options include Pro models for more complex tasks, Flash models designed for speed and efficiency, and Nano models for supported on-device tasks. Versions and availability change over time.',
-            how: 'Gemini models learn patterns from large training datasets and generate likely useful outputs. Multimodal versions can process more than text, and some products can use tools such as search when enabled.',
-            merits: ['Can assist with writing, summaries, brainstorming, coding, and multimodal tasks.', 'Different model tiers balance capability, speed, and device needs.', 'Integrates with Google products and services where supported.'],
-            limits: 'Gemini can make mistakes or provide outdated information. Verify important claims and be thoughtful about the information you share.',
-            url: 'https://ai.google.dev/gemini-api/docs/models'
-        },
-        chatgpt: {
-            title: 'OpenAI ChatGPT',
-            intro: 'ChatGPT is OpenAI’s conversational AI product, powered by different GPT model options. It can help explain topics, draft writing, analyze information, and assist with coding.',
-            models: 'OpenAI provides general-purpose GPT models, reasoning-focused models for more involved problems, and smaller or faster options. The available model names and capabilities vary by plan and change regularly.',
-            how: 'GPT models learn patterns from data and generate a response piece by piece. Depending on the selected model and enabled features, ChatGPT may also analyze images or files, browse, or use other tools.',
-            merits: ['Flexible for conversation, explanations, writing, analysis, and programming.', 'Model choices can balance response speed and deeper reasoning.', 'Optional tools and multimodal features are available in supported plans.'],
-            limits: 'Fluent answers are not guaranteed to be correct. Verify important advice, calculations, and sources; features vary by model and plan.',
-            url: 'https://platform.openai.com/docs/models'
-        },
-        claude: {
-            title: 'Anthropic Claude',
-            intro: 'Claude is Anthropic’s family of AI assistants and language models for conversation, writing, analysis, and software development.',
-            models: 'Claude models are commonly grouped into Opus (highest capability), Sonnet (a balance of capability and speed), and Haiku (a faster, lighter tier). Specific model versions and availability evolve.',
-            how: 'Claude uses neural language models trained to understand and generate text. Depending on the model and product, it can also work with images, long documents, and tools; safety training helps guide responses.',
-            merits: ['Useful for drafting, editing, summarizing, and analyzing long documents.', 'Model tiers provide different speed and capability trade-offs.', 'Can help with coding and structured analysis.'],
-            limits: 'Claude can make factual errors or miss details. Review outputs, especially code and high-impact decisions.',
-            url: 'https://docs.anthropic.com/en/docs/about-claude/models/overview'
-        },
-        deepseek: {
-            title: 'DeepSeek',
-            intro: 'DeepSeek is an AI company whose models include general-purpose language models and models focused on reasoning and technical tasks.',
-            models: 'DeepSeek model families include general language and coding models as well as reasoning-focused models. There are also different sizes and variants; exact releases and access options evolve.',
-            how: 'DeepSeek models generate text from learned patterns. Reasoning-focused versions are trained to spend more computation on multi-step problems. Some releases provide weights for developers to run or adapt under their license.',
-            merits: ['Can be useful for coding, technical questions, and multi-step reasoning.', 'Some releases let developers experiment with self-hosting or adapting models.', 'Different model sizes can suit different hardware and resource limits.'],
-            limits: 'Quality, privacy, hosting, and licensing depend on the specific model and service. Independently verify important results.',
-            url: 'https://github.com/deepseek-ai'
-        },
-        copilot: {
-            title: 'GitHub Copilot',
-            intro: 'GitHub Copilot is an AI coding assistant—not one single model—that helps developers write, understand, test, and improve code in supported development tools.',
-            models: 'Depending on the feature, plan, and model selector, Copilot may offer models from providers such as OpenAI, Anthropic, and Google. The available catalog changes over time.',
-            how: 'Copilot sends a prompt and relevant context, such as nearby code or open files, to a selected AI model. The model generates suggestions or explanations for a developer to review, edit, accept, or reject.',
-            merits: ['Provides coding help inside supported editors and GitHub experiences.', 'Can suggest code, explain files, and help draft tests or documentation.', 'Model choices can provide different strengths for different tasks.'],
-            limits: 'Suggestions may be incorrect, insecure, or unsuitable for your project. Review and test generated code; do not share secrets or sensitive data.',
-            url: 'https://docs.github.com/en/copilot/reference/ai-models/supported-models'
-        }
+    const modal = document.getElementById('gameModal');
+    const body = document.getElementById('gameModalBody');
+    if (!modal || !body) return;
+
+    let timer = null;
+    let keyHandler = null;
+    let state = null;
+    const stopGame = () => {
+        if (timer !== null) clearInterval(timer);
+        timer = null;
+        if (keyHandler) window.removeEventListener('keydown', keyHandler);
+        keyHandler = null;
+        state = null;
+    };
+    window.stopActiveGame = stopGame;
+    window.closeGameModal = () => {
+        stopGame();
+        modal.classList.remove('active');
+        body.innerHTML = '';
     };
 
-    function closeModal() {
-        const modal = document.getElementById('gameModal');
-        if (modal) modal.classList.remove('active');
-        const body = document.getElementById('gameModalBody');
-        if (body) body.innerHTML = '';
-        if (typeof window.stopActiveGame === 'function') window.stopActiveGame();
-    }
+    const shell = (title, status, content) => `<div class="game-shell"><div class="game-header"><h2 class="game-title">${title}</h2><div class="game-score" id="gameStatus">${status}</div></div>${content}</div>`;
+    const button = (label, action, extra = '') => `<button type="button" class="play-now-btn" data-action="${action}" ${extra}>${label}</button>`;
 
-    function openAiGuide(card) {
-        const name = card.querySelector('h4')?.textContent?.toLowerCase() || '';
-        const key = name.includes('gemini') ? 'gemini'
-            : name.includes('chatgpt') ? 'chatgpt'
-            : name.includes('claude') ? 'claude'
-            : name.includes('deepseek') ? 'deepseek'
-            : name.includes('copilot') ? 'copilot' : null;
-        const guide = aiGuides[key];
-        const modal = document.getElementById('gameModal');
-        const body = document.getElementById('gameModalBody');
-        if (!guide || !modal || !body) return;
-        body.innerHTML = `<article class="ai-detail">
-            <h2>${guide.title}</h2><p>${guide.intro}</p>
-            <section><h3>Model families</h3><p>${guide.models}</p></section>
-            <section><h3>How it works</h3><p>${guide.how}</p></section>
-            <section><h3>Main merits</h3><ul>${guide.merits.map(item => `<li>${item}</li>`).join('')}</ul></section>
-            <section><h3>Things to keep in mind</h3><p>${guide.limits}</p></section>
-            <p class="ai-note">Model lineups change. See <a href="${guide.url}" target="_blank" rel="noopener noreferrer">the provider’s documentation</a> for current details.</p>
-        </article>`;
+    function launch(key) {
+        stopGame();
+        const games = {
+            snake: () => {
+                body.innerHTML = shell('🐍 Snake Game', 'Score: 0', `<p>Use the arrow buttons, keyboard arrows, or WASD. The edges wrap around.</p><div class="game-box"><div id="snakeBoard" class="snake-board" style="grid-template-columns:repeat(10,22px);grid-template-rows:repeat(10,22px)"></div></div><div class="snake-controls"><button class="arrow-btn" data-dir="up" aria-label="Move up">↑</button><button class="arrow-btn" data-dir="left" aria-label="Move left">←</button><button class="arrow-btn" data-dir="down" aria-label="Move down">↓</button><button class="arrow-btn" data-dir="right" aria-label="Move right">→</button></div>${button('Restart Game','restart')}</div>`);
+                const board = document.getElementById('snakeBoard');
+                const cells = [];
+                for (let i = 0; i < 100; i++) { const cell = document.createElement('div'); cell.className = 'snake-cell'; board.appendChild(cell); cells.push(cell); }
+                state = { snake: [{x:4,y:5},{x:3,y:5},{x:2,y:5}], dir:{x:1,y:0}, next:{x:1,y:0}, food:{x:7,y:5}, score:0, over:false };
+                const draw = () => cells.forEach((cell,i) => { cell.classList.toggle('snake', state.snake.some(p => p.x === i%10 && p.y === Math.floor(i/10))); cell.classList.toggle('food', state.food.x === i%10 && state.food.y === Math.floor(i/10)); });
+                const setDir = d => { if (state && !(state.dir.x + d.x === 0 && state.dir.y + d.y === 0)) state.next = d; };
+                state.setDir = setDir;
+                const directions = {up:{x:0,y:-1},down:{x:0,y:1},left:{x:-1,y:0},right:{x:1,y:0}};
+                keyHandler = e => { const k=e.key.toLowerCase(); const d={arrowup:'up',w:'up',arrowdown:'down',s:'down',arrowleft:'left',a:'left',arrowright:'right',d:'right'}[k]; if(d){e.preventDefault();setDir(directions[d]);} };
+                window.addEventListener('keydown', keyHandler);
+                draw();
+                timer = setInterval(() => {
+                    if (!state || state.over) return;
+                    state.dir = state.next;
+                    const head = {x:(state.snake[0].x+state.dir.x+10)%10,y:(state.snake[0].y+state.dir.y+10)%10};
+                    const eating = head.x===state.food.x && head.y===state.food.y;
+                    const bodyToCheck = eating ? state.snake : state.snake.slice(0,-1);
+                    if (bodyToCheck.some(p=>p.x===head.x&&p.y===head.y)) { state.over=true; document.getElementById('gameStatus').textContent=`Game over · Score: ${state.score}`; clearInterval(timer); timer=null; return; }
+                    state.snake.unshift(head);
+                    if(eating){state.score+=10; document.getElementById('gameStatus').textContent=`Score: ${state.score}`; do {state.food={x:Math.floor(Math.random()*10),y:Math.floor(Math.random()*10)};} while(state.snake.some(p=>p.x===state.food.x&&p.y===state.food.y));} else state.snake.pop();
+                    draw();
+                }, 360);
+            },
+            dragon: () => {
+                body.innerHTML = shell('🐉 Dragon Jump','Score: 0',`<p>Tap Jump or press Space to avoid the incoming blocks.</p><div id="dragonGame" class="dino-runner" style="height:200px"><span id="dragon" class="dragon">🐉</span><span id="dragonObstacle" class="obstacle" style="left:80%"></span><div class="ground"></div></div><div class="snake-controls">${button('Jump','jump')}${button('Restart','restart')}</div>`);
+                state={score:0,jumping:false,obstacle:80,over:false};
+                const jump=()=>{if(!state||state.over||state.jumping)return;state.jumping=true;const dragon=document.getElementById('dragon');dragon.style.bottom='105px';setTimeout(()=>{if(dragon.isConnected)dragon.style.bottom='30px';if(state)state.jumping=false;},550);}; state.jump=jump;
+                keyHandler=e=>{if(e.code==='Space'){e.preventDefault();jump();}};window.addEventListener('keydown',keyHandler);
+                timer=setInterval(()=>{if(!state||state.over)return;state.obstacle-=2;const obstacle=document.getElementById('dragonObstacle');obstacle.style.left=state.obstacle+'%';if(state.obstacle<12){if(!state.jumping){state.over=true;document.getElementById('gameStatus').textContent=`Game over · Score: ${state.score}`;clearInterval(timer);timer=null;return;}state.score++;document.getElementById('gameStatus').textContent=`Score: ${state.score}`;state.obstacle=95;}if(state.obstacle<0)state.obstacle=95;},70);
+            },
+            gobang: () => {
+                body.innerHTML=shell('⚫ Gobang','Turn: X',`<p>Take turns; connect five stones to win.</p><div id="gobanBoard" class="goban-board" style="grid-template-columns:repeat(10,24px)"></div>${button('Restart','restart')}`);
+                const board=document.getElementById('gobanBoard'), marks=Array(100).fill('');let turn='X',done=false;
+                for(let i=0;i<100;i++){const b=document.createElement('button');b.type='button';b.className='goban-cell empty';b.dataset.index=i;b.style.width='24px';b.style.height='24px';board.appendChild(b);}
+                state={play:i=>{if(done||marks[i])return;marks[i]=turn;const cell=board.children[i];cell.textContent=turn;cell.classList.add(turn.toLowerCase());const r=Math.floor(i/10),c=i%10;let won=false;for(const[dr,dc]of[[0,1],[1,0],[1,1],[1,-1]]){let count=1;for(const sign of[-1,1]){let y=r+dr*sign,x=c+dc*sign;while(y>=0&&y<10&&x>=0&&x<10&&marks[y*10+x]===turn){count++;y+=dr*sign;x+=dc*sign;}}if(count>=5)won=true;}if(won){done=true;document.getElementById('gameStatus').textContent=`${turn} wins!`;}else if(marks.every(Boolean)){done=true;document.getElementById('gameStatus').textContent='Draw!';}else{turn=turn==='X'?'O':'X';document.getElementById('gameStatus').textContent=`Turn: ${turn}`;}}};
+            },
+            tictactoe: () => {
+                body.innerHTML=shell('⭕ Tic-Tac-Toe','Turn: X',`<div id="tttBoard" class="ttt-board"></div>${button('Restart','restart')}`);
+                const board=document.getElementById('tttBoard'),cells=Array(9).fill(''),wins=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];let turn='X',done=false;
+                for(let i=0;i<9;i++){const b=document.createElement('button');b.type='button';b.className='ttt-cell';b.dataset.index=i;board.appendChild(b);}
+                state={play:i=>{if(done||cells[i])return;cells[i]=turn;board.children[i].textContent=turn;const win=wins.some(line=>line.every(n=>cells[n]===turn));if(win){done=true;document.getElementById('gameStatus').textContent=`${turn} wins!`;}else if(cells.every(Boolean)){done=true;document.getElementById('gameStatus').textContent='Draw!';}else{turn=turn==='X'?'O':'X';document.getElementById('gameStatus').textContent=`Turn: ${turn}`;}}};
+            },
+            memory: () => {
+                body.innerHTML=shell('🧠 Memory Match','Moves: 0',`<div id="memoryBoard" class="memory-board"></div>${button('New Game','restart')}`);
+                const values=['🍉','🍊','🍋','🍇','🍒','🍓','��','🍊','🍋','🍇','🍒','🍓'].sort(()=>Math.random()-.5),board=document.getElementById('memoryBoard');let open=[],moves=0,lock=false;
+                values.forEach((v,i)=>{const b=document.createElement('button');b.type='button';b.className='memory-card';b.textContent='?';b.dataset.index=i;board.appendChild(b);});
+                state={flip:i=>{if(lock)return;const b=board.children[i];if(b.classList.contains('matched')||open.includes(i))return;b.textContent=values[i];open.push(i);if(open.length===2){moves++;document.getElementById('gameStatus').textContent=`Moves: ${moves}`;const pair=open.slice();if(values[pair[0]]===values[pair[1]]){pair.forEach(n=>board.children[n].classList.add('matched'));open=[];}else{lock=true;setTimeout(()=>{pair.forEach(n=>{if(board.children[n])board.children[n].textContent='?';});open=[];lock=false;},650);}}}};
+            },
+            guess: () => {
+                body.innerHTML=shell('🎯 Guess Number','6 tries',`<p>Guess a number from 1 to 20.</p><div class="guess-box"><input id="guessInput" class="guess-input" type="number" min="1" max="20" inputmode="numeric" placeholder="1 to 20"><button class="guess-btn" data-action="guess">Guess</button><p id="guessResult" aria-live="polite">I picked a number. Good luck!</p>${button('New Game','restart')}</div>`);
+                state={target:Math.floor(Math.random()*20)+1,tries:0,done:false,guess:()=>{const input=document.getElementById('guessInput'),n=Number(input.value),result=document.getElementById('guessResult');if(!n||n<1||n>20){result.textContent='Enter a number from 1 to 20.';return;}if(state.done)return;state.tries++;if(n===state.target){result.textContent=`Correct! You got it in ${state.tries} ${state.tries===1?'try':'tries'}.`;state.done=true;}else if(state.tries>=6){result.textContent=`Game over — the number was ${state.target}.`;state.done=true;}else result.textContent=`${n<state.target?'Too low':'Too high'} — ${6-state.tries} tries left.`;}};
+            },
+            quiz: () => {
+                const questions=[['Which language makes web pages interactive?',['HTML','CSS','JavaScript'],'JavaScript'],['What does AI stand for?',['Artificial Intelligence','Automated Internet','Advanced Input'],'Artificial Intelligence'],['Which company created ChatGPT?',['Google','OpenAI','Apple'],'OpenAI']];
+                body.innerHTML=shell('❓ Quick Quiz','Question 1 of 3',`<div id="quizBox"></div>${button('Play Again','restart')}`);state={index:0,score:0,answer:i=>{if(i===questions[state.index][2])state.score++;state.index++;if(state.index>=questions.length){document.getElementById('gameStatus').textContent=`Score: ${state.score}/${questions.length}`;document.getElementById('quizBox').innerHTML='<p>Quiz complete! Press Play Again to try once more.</p>';return;}show();}};
+                function show(){const q=questions[state.index],box=document.getElementById('quizBox');document.getElementById('gameStatus').textContent=`Question ${state.index+1} of ${questions.length} · Score: ${state.score}`;box.innerHTML=`<h3>${q[0]}</h3><div class="quiz-options">${q[1].map((x,i)=>`<button type="button" class="quiz-option" data-choice="${i}">${x}</button>`).join('')}</div>`;}show();
+            }
+        };
+        (games[key] || games.snake)();
         modal.classList.add('active');
     }
 
     document.addEventListener('click', event => {
-        // Close only when the explicit close control or the backdrop is clicked.
-        if (event.target.closest('#gameModal .modal-close') || event.target.id === 'gameModal') {
-            closeModal();
-            return;
-        }
-        const aiCard = event.target.closest('#aiPage .full-sub-card');
-        if (!aiCard || event.target.closest('.like-btn')) return;
-        event.preventDefault();
-        event.stopImmediatePropagation();
-        openAiGuide(aiCard);
-    }, true);
+        const launchButton=event.target.closest('.game-launch-btn');
+        if(launchButton){event.preventDefault();event.stopImmediatePropagation();launch(launchButton.dataset.game);return;}
+        if(event.target.closest('#gameModal .modal-close')||event.target===modal){window.closeGameModal();return;}
+        if(!body.contains(event.target)||!state)return;
+        const dir=event.target.closest('[data-dir]');if(dir&&state.setDir){state.setDir({up:{x:0,y:-1},down:{x:0,y:1},left:{x:-1,y:0},right:{x:1,y:0}}[dir.dataset.dir]);return;}
+        const action=event.target.closest('[data-action]')?.dataset.action;
+        if(action==='restart'){launch(document.querySelector('.game-launch-btn[data-game]')?.dataset.game || 'snake');return;}
+        if(action==='jump'&&state.jump){state.jump();return;}
+        if(action==='guess'&&state.guess){state.guess();return;}
+        const cell=event.target.closest('[data-index]');if(cell){const i=Number(cell.dataset.index);if(state.play)state.play(i);else if(state.flip)state.flip(i);}
+        const choice=event.target.closest('[data-choice]');if(choice&&state.answer)state.answer(Number(choice.dataset.choice));
+    },true);
 
-    const style = document.createElement('style');
-    style.textContent = `
-        .snake-controls { display:grid; grid-template-columns:repeat(3,64px); grid-template-rows:repeat(2,56px); gap:8px; justify-content:center; }
-        .snake-controls .arrow-btn { min-width:64px; min-height:56px; padding:8px; border:1px solid rgba(0,229,255,.45); border-radius:14px; background:rgba(0,229,255,.18); color:inherit; font-size:1.65rem; touch-action:manipulation; }
-        .snake-controls .arrow-btn[data-dir="up"] { grid-column:2; grid-row:1; }
-        .snake-controls .arrow-btn[data-dir="left"] { grid-column:1; grid-row:2; }
-        .snake-controls .arrow-btn[data-dir="down"] { grid-column:2; grid-row:2; }
-        .snake-controls .arrow-btn[data-dir="right"] { grid-column:3; grid-row:2; }
-        .ai-detail { display:grid; gap:14px; padding-top:12px; line-height:1.65; }
-        .ai-detail h2 { color:#00e5ff; }
-        .ai-detail h3 { color:#7dd3fc; margin-bottom:4px; }
-        .ai-detail p,.ai-detail li { color:#d3dbe7; }
-        body.light-mode .ai-detail p,body.light-mode .ai-detail li { color:#334155; }
-        .ai-detail ul { padding-left:22px; }
-        .ai-detail a { color:#00e5ff; }
-        body.light-mode .ai-detail a { color:#007f91; }
-        .ai-note { font-size:.9rem; opacity:.85; }
-        @media(max-width:620px) { .snake-controls { grid-template-columns:repeat(3,72px); grid-template-rows:repeat(2,62px); } .snake-controls .arrow-btn { min-width:72px; min-height:62px; } }
-    `;
-    document.head.appendChild(style);
-
-    // Ensure the modal close button works even if the existing game script hasn't loaded.
-    document.addEventListener('DOMContentLoaded', () => {
-        const closeButton = document.querySelector('#gameModal .modal-close');
-        if (closeButton) closeButton.addEventListener('click', closeModal);
-    });
-
-    // Load the existing game code after synchronous navigation is ready.
-    const legacyScript = document.createElement('script');
-    legacyScript.src = 'https://raw.githubusercontent.com/syedsuhan921-netizen/VIBGYOR-/dc387cb95d29fda43095f73bb0d1aee28429d638/script.js';
-    legacyScript.addEventListener('load', () => {
-        // Snake's original 180 ms interval is slowed to 320 ms.
-        const nativeSetInterval = window.setInterval.bind(window);
-        window.setInterval = (callback, delay, ...args) => nativeSetInterval(callback, delay === 180 ? 320 : delay, ...args);
-
-        const originalRender = window.renderGameModal;
-        window.renderGameModal = function (gameKey) {
-            originalRender(gameKey);
-            if (gameKey !== 'snake') return;
-            const labels = { up: ['↑', 'Move up'], left: ['←', 'Move left'], down: ['↓', 'Move down'], right: ['→', 'Move right'] };
-            document.querySelectorAll('#gameModalBody .arrow-btn[data-dir]').forEach(button => {
-                const [label, accessibleName] = labels[button.dataset.dir];
-                button.type = 'button'; button.textContent = label;
-                button.setAttribute('aria-label', accessibleName); button.title = accessibleName;
-            });
-            const restart = document.querySelector('#gameModalBody .game-shell > .play-now-btn');
-            if (restart) { restart.type = 'button'; restart.textContent = 'Restart Game'; }
-        };
-        if (typeof window.bindGameButtons === 'function') window.bindGameButtons();
-    });
-    legacyScript.addEventListener('error', () => console.error('Game script failed to load; page navigation remains available.'));
-    document.head.appendChild(legacyScript);
+    // Close with Escape and keep keyboard controls available for the active game.
+    document.addEventListener('keydown',event=>{if(event.key==='Escape'&&modal.classList.contains('active'))window.closeGameModal();});
 })();
