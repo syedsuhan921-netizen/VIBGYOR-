@@ -1,4 +1,9 @@
-// Keep page navigation and games self-contained so external elements remain responsive.
+/* ==========================================
+   VIBGYOR TECHNOLOGIES - MASTER SCRIPT
+   Full Navigation, Settings, & Glitch-Free Games
+========================================== */
+
+// --- 1. PAGE NAVIGATION & SETTINGS CONTROLS ---
 window.showPage = function (pageId) {
     const page = document.getElementById(pageId);
     if (!page) return;
@@ -6,9 +11,23 @@ window.showPage = function (pageId) {
     page.style.display = 'block';
     window.scrollTo(0, 0);
 };
+
 window.toggleTheme = () => document.body.classList.toggle('light-mode');
+
 window.showMessage = () => alert('Welcome to VIBGYOR Technologies! Click any category card to open its dedicated full page.');
 
+window.openSettings = function () {
+    const settingsPanel = document.getElementById("settingsPanel");
+    if (settingsPanel) settingsPanel.style.display = "flex";
+};
+
+window.closeSettings = function () {
+    const settingsPanel = document.getElementById("settingsPanel");
+    if (settingsPanel) settingsPanel.style.display = "none";
+};
+
+
+// --- 2. GAME HUB LOGIC ---
 (() => {
     const modal = document.getElementById('gameModal');
     const body = document.getElementById('gameModalBody');
@@ -183,9 +202,9 @@ window.showMessage = () => alert('Welcome to VIBGYOR Technologies! Click any cat
         if(action==='jump'&&state.jump){state.jump();return;}
         if(action==='guess'&&state.guess){state.guess();return;}
         const cell=event.target.closest('[data-index]');if(cell){const i=Number(cell.dataset.index);if(state.play)state.play(i);else if(state.flip)state.flip(i);}
-        const choice=event.target.closest('[data-choice]');if(choice&&state.answer)state.answer(Number(choice.dataset.choice));
+        const choice=event.target.closest('[data-choice]');if(choice&&state.answer)state.answer(Number(choice.choice ?? choice.dataset.choice));
     },true);
 
     document.addEventListener('keydown',event=>{if(event.key==='Escape'&&modal.classList.contains('active'))window.closeGameModal();});
 })();
- 
+            
