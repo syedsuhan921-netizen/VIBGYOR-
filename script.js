@@ -1,15 +1,3 @@
-// Keep page navigation and games self-contained so a blocked external script cannot
-// leave the Games card or Play Now buttons unresponsive.
-window.showPage = function (pageId) {
-    const page = document.getElementById(pageId);
-    if (!page) return;
-    document.querySelectorAll('.page-view').forEach(item => { item.style.display = 'none'; });
-    page.style.display = 'block';
-    window.scrollTo(0, 0);
-};
-window.toggleTheme = () => document.body.classList.toggle('light-mode');
-window.showMessage = () => alert('Welcome to VIBGYOR Technologies! Click any category card to open its dedicated full page.');
-
 (() => {
     const modal = document.getElementById('gameModal');
     const body = document.getElementById('gameModalBody');
@@ -18,13 +6,24 @@ window.showMessage = () => alert('Welcome to VIBGYOR Technologies! Click any cat
     let timer = null;
     let keyHandler = null;
     let state = null;
+    let activeGame = 'snake';
+    let animationFrame = null;
+    let resetSnakeGame = null;
+
     const stopGame = () => {
         if (timer !== null) clearInterval(timer);
         timer = null;
+
+        if (animationFrame !== null) cancelAnimationFrame(animationFrame);
+        animationFrame = null;
+
         if (keyHandler) window.removeEventListener('keydown', keyHandler);
         keyHandler = null;
+
+        resetSnakeGame = null;
         state = null;
     };
+
     window.stopActiveGame = stopGame;
     window.closeGameModal = () => {
         stopGame();
@@ -40,35 +39,184 @@ window.showMessage = () => alert('Welcome to VIBGYOR Technologies! Click any cat
         const games = {
             snake: () => {
                 body.innerHTML = shell('🐍 Snake Game', 'Score: 0', `<p>Use the arrow buttons, keyboard arrows, or WASD. The edges wrap around.</p><div class="game-box"><div id="snakeBoard" class="snake-board" style="grid-template-columns:repeat(10,22px);grid-template-rows:repeat(10,22px)"></div></div><div class="snake-controls"><button class="arrow-btn" data-dir="up" aria-label="Move up">↑</button><button class="arrow-btn" data-dir="left" aria-label="Move left">←</button><button class="arrow-btn" data-dir="down" aria-label="Move down">↓</button><button class="arrow-btn" data-dir="right" aria-label="Move right">→</button></div>${button('Restart Game','restart')}</div>`);
+
                 const board = document.getElementById('snakeBoard');
                 const cells = [];
-                for (let i = 0; i < 100; i++) { const cell = document.createElement('div'); cell.className = 'snake-cell'; board.appendChild(cell); cells.push(cell); }
-                state = { snake: [{x:4,y:5},{x:3,y:5},{x:2,y:5}], dir:{x:1,y:0}, next:{x:1,y:0}, food:{x:7,y:5}, score:0, over:false };
-                const draw = () => cells.forEach((cell,i) => { cell.classList.toggle('snake', state.snake.some(p => p.x === i%10 && p.y === Math.floor(i/10))); cell.classList.toggle('food', state.food.x === i%10 && state.food.y === Math.floor(i/10)); });
-                const setDir = d => { if (state && !(state.dir.x + d.x === 0 && state.dir.y + d.y === 0)) state.next = d; };
-                state.setDir = setDir;
+
+                for (let i = 0; i < 100; i++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'snake-cell';
+                    board.appendChild(cell);
+                    cells.push(cell);
+                }
+
+                const placeFood = () => {
+                    let nextFood;
+                    do {
+                        nextFood = {
+                            x: Math.floor(Math.random() * 10),
+                            y: Math.floor(Math.random() * 10)
+                        };
+                    } while (state.snake.some(part => part.x === nextFood.x && part.y === nextFood.y));
+                    return nextFood;
+                };
+
+                const draw = () => {
+                    cells.forEach((cell, i) => {
+                        const x = i % 10;
+                        const y = Math.floor(i / 10);
+                        cell.classList.toggle('snake', state.snake.some(part => part.x === x && part.y === y));
+                        cell.classList.toggle('food', state.food.x === x && state.food.y === y);
+                    });
+                };
+
+                state = { snake: [], dir:{x:1,y:0}, next:{x:1,y:0}, food:{x:7,y:5}, score:0, over:false };
+
                 const directions = {up:{x:0,y:-1},down:{x:0,y:1},left:{x:-1,y:0},right:{x:1,y:0}};
-                keyHandler = e => { const k=e.key.toLowerCase(); const d={arrowup:'up',w:'up',arrowdown:'down',s:'down',arrowleft:'left',a:'left',arrowright:'right',d:'right'}[k]; if(d){e.preventDefault();setDir(directions[d]);} };
-                window.addEventListener('keydown', keyHandler);
-                draw();
-                timer = setInterval(() => {
+
+                state.setDir = direction => {
+                    if (state && !(state.dir.x + direction.x === 0 && state.dir.y + direction.y === 0)) {
+                        state.next = direction;
+                    }
+                };
+
+                const tick = () => {
                     if (!state || state.over) return;
+
                     state.dir = state.next;
-                    const head = {x:(state.snake[0].x+state.dir.x+10)%10,y:(state.snake[0].y+state.dir.y+10)%10};
-                    const eating = head.x===state.food.x && head.y===state.food.y;
-                    const bodyToCheck = eating ? state.snake : state.snake.slice(0,-1);
-                    if (bodyToCheck.some(p=>p.x===head.x&&p.y===head.y)) { state.over=true; document.getElementById('gameStatus').textContent=`Game over · Score: ${state.score}`; clearInterval(timer); timer=null; return; }
+                    const head = {
+                        x: (state.snake[0].x + state.dir.x + 10) % 10,
+                        y: (state.snake[0].y + state.dir.y + 10) % 10
+                    };
+                    const eating = head.x === state.food.x && head.y === state.food.y;
+                    const bodyToCheck = eating ? state.snake : state.snake.slice(0, -1);
+
+                    if (bodyToCheck.some(part => part.x === head.x && part.y === head.y)) {
+                        state.over = true;
+                        document.getElementById('gameStatus').textContent = `Game over · Score: ${state.score}`;
+                        clearInterval(timer);
+                        timer = null;
+                        return;
+                    }
+
                     state.snake.unshift(head);
-                    if(eating){state.score+=10; document.getElementById('gameStatus').textContent=`Score: ${state.score}`; do {state.food={x:Math.floor(Math.random()*10),y:Math.floor(Math.random()*10)};} while(state.snake.some(p=>p.x===state.food.x&&p.y===state.food.y));} else state.snake.pop();
+
+                    if (eating) {
+                        state.score += 10;
+                        state.food = placeFood();
+                        document.getElementById('gameStatus').textContent = `Score: ${state.score}`;
+                    } else {
+                        state.snake.pop();
+                    }
+
                     draw();
-                }, 360);
+                };
+
+                resetSnakeGame = () => {
+                    state.snake = [{x:4,y:5},{x:3,y:5},{x:2,y:5}];
+                    state.dir = {x:1,y:0};
+                    state.next = {x:1,y:0};
+                    state.food = placeFood();
+                    state.score = 0;
+                    state.over = false;
+
+                    const status = document.getElementById('gameStatus');
+                    if (status) status.textContent = 'Score: 0';
+
+                    draw();
+
+                    if (timer === null) {
+                        timer = setInterval(tick, 320);
+                    }
+                };
+
+                resetSnakeGame();
+
+                keyHandler = event => {
+                    const keyName = event.key.toLowerCase();
+                    const directionName = {arrowup:'up',w:'up',arrowdown:'down',s:'down',arrowleft:'left',a:'left',arrowright:'right',d:'right'}[keyName];
+                    if (directionName) {
+                        event.preventDefault();
+                        state.setDir(directions[directionName]);
+                    }
+                };
+
+                window.addEventListener('keydown', keyHandler);
             },
             dragon: () => {
                 body.innerHTML = shell('🐉 Dragon Jump','Score: 0',`<p>Tap Jump or press Space to avoid the incoming blocks.</p><div id="dragonGame" class="dino-runner" style="height:200px"><span id="dragon" class="dragon">🐉</span><span id="dragonObstacle" class="obstacle" style="left:80%"></span><div class="ground"></div></div><div class="snake-controls">${button('Jump','jump')}${button('Restart','restart')}</div>`);
-                state={score:0,jumping:false,obstacle:80,over:false};
-                const jump=()=>{if(!state||state.over||state.jumping)return;state.jumping=true;const dragon=document.getElementById('dragon');dragon.style.bottom='105px';setTimeout(()=>{if(dragon.isConnected)dragon.style.bottom='30px';if(state)state.jumping=false;},550);}; state.jump=jump;
-                keyHandler=e=>{if(e.code==='Space'){e.preventDefault();jump();}};window.addEventListener('keydown',keyHandler);
-                timer=setInterval(()=>{if(!state||state.over)return;state.obstacle-=2;const obstacle=document.getElementById('dragonObstacle');obstacle.style.left=state.obstacle+'%';if(state.obstacle<12){if(!state.jumping){state.over=true;document.getElementById('gameStatus').textContent=`Game over · Score: ${state.score}`;clearInterval(timer);timer=null;return;}state.score++;document.getElementById('gameStatus').textContent=`Score: ${state.score}`;state.obstacle=95;}if(state.obstacle<0)state.obstacle=95;},70);
+
+                const player = document.getElementById('dragon');
+                const obstacle = document.getElementById('dragonObstacle');
+
+                state = {score:0,y:0,velocityY:0,grounded:true,obstacleX:100,obstaclePassed:false,over:false};
+                const gravity = 1800;
+                const jumpVelocity = 680;
+                const obstacleSpeed = 36;
+                let previousTime = null;
+
+                const jump = () => {
+                    if (!state || state.over || !state.grounded) return;
+                    state.velocityY = jumpVelocity;
+                    state.grounded = false;
+                };
+
+                state.jump = jump;
+
+                keyHandler = event => {
+                    if (event.code === 'Space') {
+                        event.preventDefault();
+                        jump();
+                    }
+                };
+                window.addEventListener('keydown', keyHandler);
+
+                const step = timestamp => {
+                    if (!state || state.over || activeGame !== 'dragon') {
+                        animationFrame = null;
+                        return;
+                    }
+
+                    const delta = previousTime === null ? 0 : Math.min((timestamp - previousTime) / 1000, 0.05);
+                    previousTime = timestamp;
+
+                    if (!state.grounded) {
+                        state.velocityY -= gravity * delta;
+                        state.y += state.velocityY * delta;
+
+                        if (state.y <= 0) {
+                            state.y = 0;
+                            state.velocityY = 0;
+                            state.grounded = true;
+                        }
+                    }
+
+                    player.style.transform = `translateY(${-state.y}px)`;
+                    state.obstacleX -= obstacleSpeed * delta;
+
+                    if (state.obstacleX <= 12 && state.obstacleX >= 7.5 && state.y < 48) {
+                        state.over = true;
+                        document.getElementById('gameStatus').textContent = `Game over · Score: ${state.score}`;
+                        animationFrame = null;
+                        return;
+                    }
+
+                    if (state.obstacleX < 7.5 && !state.obstaclePassed) {
+                        state.score += 1;
+                        state.obstaclePassed = true;
+                        document.getElementById('gameStatus').textContent = `Score: ${state.score}`;
+                    }
+
+                    if (state.obstacleX < -5) {
+                        state.obstacleX = 100;
+                        state.obstaclePassed = false;
+                    }
+
+                    obstacle.style.left = `${state.obstacleX}%`;
+                    animationFrame = requestAnimationFrame(step);
+                };
+
+                animationFrame = requestAnimationFrame(step);
             },
             gobang: () => {
                 body.innerHTML=shell('⚫ Gobang','Turn: X',`<p>Take turns; connect five stones to win.</p><div id="gobanBoard" class="goban-board" style="grid-template-columns:repeat(10,24px)"></div>${button('Restart','restart')}`);
@@ -84,7 +232,7 @@ window.showMessage = () => alert('Welcome to VIBGYOR Technologies! Click any cat
             },
             memory: () => {
                 body.innerHTML=shell('🧠 Memory Match','Moves: 0',`<div id="memoryBoard" class="memory-board"></div>${button('New Game','restart')}`);
-                const values=['🍉','🍊','🍋','🍇','🍒','🍓','��','🍊','🍋','🍇','🍒','🍓'].sort(()=>Math.random()-.5),board=document.getElementById('memoryBoard');let open=[],moves=0,lock=false;
+                const values=['🍉','🍊','🍋','🍇','🍒','🍓','🍉','🍊','🍋','🍇','🍒','🍓'].sort(()=>Math.random()-.5),board=document.getElementById('memoryBoard');let open=[],moves=0,lock=false;
                 values.forEach((v,i)=>{const b=document.createElement('button');b.type='button';b.className='memory-card';b.textContent='?';b.dataset.index=i;board.appendChild(b);});
                 state={flip:i=>{if(lock)return;const b=board.children[i];if(b.classList.contains('matched')||open.includes(i))return;b.textContent=values[i];open.push(i);if(open.length===2){moves++;document.getElementById('gameStatus').textContent=`Moves: ${moves}`;const pair=open.slice();if(values[pair[0]]===values[pair[1]]){pair.forEach(n=>board.children[n].classList.add('matched'));open=[];}else{lock=true;setTimeout(()=>{pair.forEach(n=>{if(board.children[n])board.children[n].textContent='?';});open=[];lock=false;},650);}}}};
             },
@@ -98,7 +246,10 @@ window.showMessage = () => alert('Welcome to VIBGYOR Technologies! Click any cat
                 function show(){const q=questions[state.index],box=document.getElementById('quizBox');document.getElementById('gameStatus').textContent=`Question ${state.index+1} of ${questions.length} · Score: ${state.score}`;box.innerHTML=`<h3>${q[0]}</h3><div class="quiz-options">${q[1].map((x,i)=>`<button type="button" class="quiz-option" data-choice="${i}">${x}</button>`).join('')}</div>`;}show();
             }
         };
-        (games[key] || games.snake)();
+
+        const resolvedKey = games[key] ? key : 'snake';
+        activeGame = resolvedKey;
+        games[resolvedKey]();
         modal.classList.add('active');
     }
 
@@ -107,15 +258,24 @@ window.showMessage = () => alert('Welcome to VIBGYOR Technologies! Click any cat
         if(launchButton){event.preventDefault();event.stopImmediatePropagation();launch(launchButton.dataset.game);return;}
         if(event.target.closest('#gameModal .modal-close')||event.target===modal){window.closeGameModal();return;}
         if(!body.contains(event.target)||!state)return;
+
         const dir=event.target.closest('[data-dir]');if(dir&&state.setDir){state.setDir({up:{x:0,y:-1},down:{x:0,y:1},left:{x:-1,y:0},right:{x:1,y:0}}[dir.dataset.dir]);return;}
         const action=event.target.closest('[data-action]')?.dataset.action;
-        if(action==='restart'){launch(document.querySelector('.game-launch-btn[data-game]')?.dataset.game || 'snake');return;}
+        if(action==='restart'){
+            if(activeGame === 'snake' && resetSnakeGame) {
+                event.preventDefault();
+                resetSnakeGame();
+                return;
+            }
+            event.preventDefault();
+            launch(activeGame);
+            return;
+        }
         if(action==='jump'&&state.jump){state.jump();return;}
         if(action==='guess'&&state.guess){state.guess();return;}
         const cell=event.target.closest('[data-index]');if(cell){const i=Number(cell.dataset.index);if(state.play)state.play(i);else if(state.flip)state.flip(i);}
         const choice=event.target.closest('[data-choice]');if(choice&&state.answer)state.answer(Number(choice.dataset.choice));
     },true);
 
-    // Close with Escape and keep keyboard controls available for the active game.
     document.addEventListener('keydown',event=>{if(event.key==='Escape'&&modal.classList.contains('active'))window.closeGameModal();});
 })();
