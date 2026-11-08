@@ -61,14 +61,57 @@ window.showMessage = () => alert('Welcome to VIBGYOR Technologies! Click any cat
                     state.snake.unshift(head);
                     if(eating){state.score+=10; document.getElementById('gameStatus').textContent=`Score: ${state.score}`; do {state.food={x:Math.floor(Math.random()*10),y:Math.floor(Math.random()*10)};} while(state.snake.some(p=>p.x===state.food.x&&p.y===state.food.y));} else state.snake.pop();
                     draw();
-                }, 360);
+                }, 300);
             },
             dragon: () => {
-                body.innerHTML = shell('🐉 Dragon Jump','Score: 0',`<p>Tap Jump or press Space to avoid the incoming blocks.</p><div id="dragonGame" class="dino-runner" style="height:200px"><span id="dragon" class="dragon">🐉</span><span id="dragonObstacle" class="obstacle" style="left:80%"></span><div class="ground"></div></div><div class="snake-controls">${button('Jump','jump')}${button('Restart','restart')}</div>`);
-                state={score:0,jumping:false,obstacle:80,over:false};
-                const jump=()=>{if(!state||state.over||state.jumping)return;state.jumping=true;const dragon=document.getElementById('dragon');dragon.style.bottom='105px';setTimeout(()=>{if(dragon.isConnected)dragon.style.bottom='30px';if(state)state.jumping=false;},550);}; state.jump=jump;
-                keyHandler=e=>{if(e.code==='Space'){e.preventDefault();jump();}};window.addEventListener('keydown',keyHandler);
-                timer=setInterval(()=>{if(!state||state.over)return;state.obstacle-=2;const obstacle=document.getElementById('dragonObstacle');obstacle.style.left=state.obstacle+'%';if(state.obstacle<12){if(!state.jumping){state.over=true;document.getElementById('gameStatus').textContent=`Game over · Score: ${state.score}`;clearInterval(timer);timer=null;return;}state.score++;document.getElementById('gameStatus').textContent=`Score: ${state.score}`;state.obstacle=95;}if(state.obstacle<0)state.obstacle=95;},70);
+                body.innerHTML = shell('🐉 Dragon Jump','Score: 0',`<p>Tap Jump or press Space to avoid incoming obstacles smoothly.</p><div id="dragonGame" class="dino-runner" style="height:200px; position:relative; overflow:hidden;"><span id="dragon" class="dragon" style="position:absolute; bottom:30px; left:20px; transition:none;">🐉</span><span id="dragonObstacle" class="obstacle" style="position:absolute; bottom:30px; left:80%"></span><div class="ground" style="position:absolute; bottom:0; width:100%; height:30px;"></div></div><div class="snake-controls">${button('Jump','jump')}${button('Restart','restart')}</div>`);
+                
+                state = { score: 0, dragonY: 30, velocity: 0, gravity: 0.6, lift: -10, obstacleX: 80, over: false };
+                
+                const jump = () => {
+                    if (!state || state.over) return;
+                    state.velocity = state.lift;
+                };
+                state.jump = jump;
+
+                keyHandler = e => { if (e.code === 'Space') { e.preventDefault(); jump(); } };
+                window.addEventListener('keydown', keyHandler);
+
+                timer = setInterval(() => {
+                    if (!state || state.over) return;
+
+                    // Smooth physics calculations
+                    state.velocity += state.gravity;
+                    state.dragonY -= state.velocity; // Moving upwards decreases bottom style offset
+                    
+                    if (state.dragonY < 30) {
+                        state.dragonY = 30;
+                        state.velocity = 0;
+                    }
+
+                    // Move obstacle
+                    state.obstacleX -= 2.5;
+                    const obstacleEl = document.getElementById('dragonObstacle');
+                    const dragonEl = document.getElementById('dragon');
+                    
+                    if (obstacleEl) obstacleEl.style.left = state.obstacleX + '%';
+                    if (dragonEl) dragonEl.style.bottom = state.dragonY + 'px';
+
+                    // Collision detection & scoring
+                    if (state.obstacleX < 12 && state.obstacleX > 2 && state.dragonY < 65) {
+                        state.over = true;
+                        document.getElementById('gameStatus').textContent = `Game over · Score: ${state.score}`;
+                        clearInterval(timer);
+                        timer = null;
+                        return;
+                    }
+
+                    if (state.obstacleX < 0) {
+                        state.obstacleX = 95;
+                        state.score++;
+                        document.getElementById('gameStatus').textContent = `Score: ${state.score}`;
+                    }
+                }, 30);
             },
             gobang: () => {
                 body.innerHTML=shell('⚫ Gobang','Turn: X',`<p>Take turns; connect five stones to win.</p><div id="gobanBoard" class="goban-board" style="grid-template-columns:repeat(10,24px)"></div>${button('Restart','restart')}`);
@@ -84,7 +127,8 @@ window.showMessage = () => alert('Welcome to VIBGYOR Technologies! Click any cat
             },
             memory: () => {
                 body.innerHTML=shell('🧠 Memory Match','Moves: 0',`<div id="memoryBoard" class="memory-board"></div>${button('New Game','restart')}`);
-                const values=['🍉','🍊','🍋','🍇','🍒','🍓','��','🍊','🍋','🍇','🍒','🍓'].sort(()=>Math.random()-.5),board=document.getElementById('memoryBoard');let open=[],moves=0,lock=false;
+                // Included proper watermelon emoji 🍉 along with other balanced items
+                const values=['🍉','🍊','🍋','🍇','🍒','🍓','🍉','🍊','🍋','🍇','🍒','🍓'].sort(()=>Math.random()-.5),board=document.getElementById('memoryBoard');let open=[],moves=0,lock=false;
                 values.forEach((v,i)=>{const b=document.createElement('button');b.type='button';b.className='memory-card';b.textContent='?';b.dataset.index=i;board.appendChild(b);});
                 state={flip:i=>{if(lock)return;const b=board.children[i];if(b.classList.contains('matched')||open.includes(i))return;b.textContent=values[i];open.push(i);if(open.length===2){moves++;document.getElementById('gameStatus').textContent=`Moves: ${moves}`;const pair=open.slice();if(values[pair[0]]===values[pair[1]]){pair.forEach(n=>board.children[n].classList.add('matched'));open=[];}else{lock=true;setTimeout(()=>{pair.forEach(n=>{if(board.children[n])board.children[n].textContent='?';});open=[];lock=false;},650);}}}};
             },
@@ -119,3 +163,4 @@ window.showMessage = () => alert('Welcome to VIBGYOR Technologies! Click any cat
     // Close with Escape and keep keyboard controls available for the active game.
     document.addEventListener('keydown',event=>{if(event.key==='Escape'&&modal.classList.contains('active'))window.closeGameModal();});
 })();
+                
