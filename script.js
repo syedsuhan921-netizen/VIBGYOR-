@@ -5,25 +5,46 @@
 
 // --- 1. PAGE NAVIGATION & SETTINGS CONTROLS ---
 window.showPage = function (pageId) {
+    // Hide all page views
+    document.querySelectorAll('.page-view').forEach(item => { 
+        item.style.display = 'none'; 
+    });
+    
+    // Show the requested page view
     const page = document.getElementById(pageId);
-    if (!page) return;
-    document.querySelectorAll('.page-view').forEach(item => { item.style.display = 'none'; });
-    page.style.display = 'block';
+    if (page) {
+        page.style.display = 'block';
+    }
+    
     window.scrollTo(0, 0);
 };
 
-window.toggleTheme = () => document.body.classList.toggle('light-mode');
+window.toggleTheme = () => document.body.classList.toggle('light');
 
 window.showMessage = () => alert('Welcome to VIBGYOR Technologies! Click any category card to open its dedicated full page.');
 
 window.openSettings = function () {
-    const settingsPanel = document.getElementById("settingsPanel");
-    if (settingsPanel) settingsPanel.style.display = "flex";
+    showPage('settingsPage');
 };
 
 window.closeSettings = function () {
-    const settingsPanel = document.getElementById("settingsPanel");
-    if (settingsPanel) settingsPanel.style.display = "none";
+    showPage('website');
+};
+
+// Like Button Toggle Counter
+window.toggleLike = function (btn) {
+    const span = btn.querySelector('span');
+    let count = parseInt(span.textContent || '0');
+    if (btn.classList.contains('liked')) {
+        count--;
+        btn.classList.remove('liked');
+        btn.style.background = '';
+    } else {
+        count++;
+        btn.classList.add('liked');
+        btn.style.background = 'rgba(0, 229, 255, 0.2)';
+    }
+    span.textContent = count;
 };
 
 
@@ -207,4 +228,4 @@ window.closeSettings = function () {
 
     document.addEventListener('keydown',event=>{if(event.key==='Escape'&&modal.classList.contains('active'))window.closeGameModal();});
 })();
-            
+                   
