@@ -5,33 +5,38 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VIBGYOR Technologies</title>
     <link rel="icon" type="image/jpeg" href="Screenshot_2026_0726_204909.jpg">
-    <meta name="google-site-verification" content="Hi3M5jdvahHgKDzdznRBZZABj-7NYwjcnv11uiioSU0" />
+    <meta name="google-site-verification" content="Hi3M5jdvahHgKDzdznRBZZABj-7NYwjcnv11uiioSU0">
     <link rel="stylesheet" href="style.css">
+    <style>
+        .ai-model-card { min-height: 150px; display:flex; flex-direction:column; justify-content:space-between; }
+        .ai-model-card .card-hint { display:block; margin-top:14px; color:#00e5ff; font-size:12px; font-weight:bold; }
+        .ai-detail-page { max-width:1100px; }
+        .ai-detail-hero { padding:28px; border:1px solid rgba(0,229,255,.25); border-radius:20px; background:linear-gradient(135deg,rgba(0,229,255,.12),rgba(255,255,255,.03)); margin-bottom:18px; }
+        .ai-detail-hero h1 { font-size:clamp(2rem,5vw,3rem); margin:8px 0; }
+        .ai-detail-hero p, .ai-detail-section p, .ai-detail-section li { color:#b0c4de; line-height:1.7; }
+        body.light-mode .ai-detail-hero p, body.light-mode .ai-detail-section p, body.light-mode .ai-detail-section li { color:#334155; }
+        .ai-detail-kicker { color:#00e5ff !important; font-size:12px; font-weight:bold; letter-spacing:2px; text-transform:uppercase; }
+        .ai-detail-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:15px; margin:18px 0; }
+        .ai-detail-section { padding:22px; background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.1); border-radius:16px; }
+        body.light-mode .ai-detail-section { background:rgba(255,255,255,.72); border-color:rgba(0,0,0,.1); }
+        .ai-detail-section h2 { font-size:1.15rem; margin-bottom:10px; }
+        .ai-detail-section ul { padding-left:20px; }
+        .ai-detail-section li + li { margin-top:7px; }
+        .ai-performance-note { font-size:.86rem; opacity:.9; margin-top:14px; }
+        .ai-detail-back { margin-bottom:16px; }
+        .ai-open-card { cursor:pointer; }
+        .ai-open-card:focus-visible { outline:3px solid #00e5ff; outline-offset:3px; }
+    </style>
 </head>
 <body>
     <div id="website" class="page-view">
         <header>
-            <div class="brand">
-                <img src="Screenshot_2026_0726_204909.jpg" alt="Logo" class="nav-logo">
-                <span>VIBGYOR Technologies</span>
-            </div>
-            <button class="settings-icon-btn" onclick="showPage('settingsPage')">⚙️</button>
+            <div class="brand"><img src="Screenshot_2026_0726_204909.jpg" alt="VIBGYOR logo" class="nav-logo"><span>VIBGYOR Technologies</span></div>
+            <button class="settings-icon-btn" onclick="showPage('settingsPage')" aria-label="Open settings">⚙️</button>
         </header>
-
-        <nav>
-            <a href="#home">Home</a>
-            <a href="#news">Tech News</a>
-            <a href="#" onclick="showPage('settingsPage')">Settings</a>
-        </nav>
-
+        <nav><a href="#home">Home</a><a href="#news">Tech News</a><a href="#" onclick="showPage('settingsPage')">Settings</a></nav>
         <main>
-            <section class="hero" id="home">
-                <p class="small-title">WELCOME TO</p>
-                <h1>VIBGYOR <span>Technologies</span></h1>
-                <p class="hero-desc">Explore AI, coding, gadgets, science and the technology shaping tomorrow.</p>
-                <button class="explore" onclick="showMessage()">Explore Now →</button>
-            </section>
-
+            <section class="hero" id="home"><p class="small-title">WELCOME TO</p><h1>VIBGYOR <span>Technologies</span></h1><p class="hero-desc">Explore AI, coding, gadgets, science and the technology shaping tomorrow.</p><button class="explore" onclick="showMessage()">Explore Now →</button></section>
             <section class="categories">
                 <div class="category" onclick="showPage('aiPage')"><div class="emoji">🤖</div><h3>AI</h3><p>Artificial Intelligence</p></div>
                 <div class="category" onclick="showPage('programmingPage')"><div class="emoji">💻</div><h3>Programming</h3><p>Coding & Development</p></div>
@@ -39,271 +44,45 @@
                 <div class="category" onclick="showPage('sciencePage')"><div class="emoji">🔬</div><h3>Science</h3><p>Future Innovation</p></div>
                 <div class="category" onclick="showPage('gamesPage')"><div class="emoji">🎮</div><h3>Games</h3><p>Mini Fun Time</p></div>
             </section>
-
-            <section class="section-card" id="news">
-                <p class="label">LATEST</p>
-                <h2>Technology News</h2>
-                <div class="news-card">
-                    <div class="news-icon">🚀</div>
-                    <div>
-                        <h3>VIBGYOR Tech News</h3>
-                        <p style="font-size: 0.85rem; color: #a0a5b5; margin: 4px 0;">AI breakthroughs and updates.</p>
-                        <small class="badge">Coming Soon</small>
-                    </div>
-                </div>
-            </section>
+            <section class="section-card" id="news"><p class="label">LATEST</p><h2>Technology News</h2><div class="news-card"><div class="news-icon">🚀</div><div><h3>VIBGYOR Tech News</h3><p style="font-size:.85rem;color:#a0a5b5;margin:4px 0">AI breakthroughs and updates.</p><small class="badge">Coming Soon</small></div></div></section>
         </main>
-
-        <footer>
-            <h3>VIBGYOR Technologies</h3>
-            <p>Innovating Today • Building Tomorrow</p>
-            <div class="social-links">
-                <a class="social-link" href="https://www.instagram.com/the__suhan__official__/" target="_blank">📸 Instagram</a>
-                <a class="social-link" href="https://github.com/syedsuhan921-netizen" target="_blank">🐙 GitHub</a>
-            </div>
-            <p class="copyright" style="margin-top:15px; font-size:11px;">© 2026 VIBGYOR Technologies</p>
-        </footer>
+        <footer><h3>VIBGYOR Technologies</h3><p>Innovating Today • Building Tomorrow</p><div class="social-links"><a class="social-link" href="https://www.instagram.com/the__suhan__official__/" target="_blank" rel="noopener">📸 Instagram</a><a class="social-link" href="https://github.com/syedsuhan921-netizen" target="_blank" rel="noopener">🐙 GitHub</a></div><p class="copyright" style="margin-top:15px;font-size:11px">© 2026 VIBGYOR Technologies</p></footer>
     </div>
 
-    <div id="aiPage" class="page-view" style="display:none;">
+    <div id="aiPage" class="page-view" style="display:none">
         <div class="settings-header"><h2>🤖 Artificial Intelligence</h2><button class="back-btn" onclick="showPage('website')">← Back</button></div>
-        <p style="color:#b0c4de; margin-bottom:20px;">Select an AI model to learn more:</p>
+        <p style="color:#b0c4de;margin-bottom:20px">Choose an AI assistant to explore its model families, strengths, and typical performance:</p>
         <div class="full-page-grid">
-            <div class="full-sub-card" onclick="alert('Gemini: Advanced multimodal AI developed by Google.')">
-                <div class="card-top"><h4>✨ Gemini</h4><button class="like-btn" data-name="Gemini" onclick="event.stopPropagation(); toggleLike(this);" aria-label="Like Gemini">👍 <span>0</span></button></div>
-                <p>Google Multimodal AI model for reasoning and coding.</p>
-            </div>
-            <div class="full-sub-card" onclick="alert('ChatGPT: Conversational AI trained by OpenAI.')">
-                <div class="card-top"><h4>🤖 ChatGPT</h4><button class="like-btn" data-name="ChatGPT" onclick="event.stopPropagation(); toggleLike(this);" aria-label="Like ChatGPT">👍 <span>0</span></button></div>
-                <p>OpenAI assistant for general intelligence and tasks.</p>
-            </div>
-            <div class="full-sub-card" onclick="alert('Claude: Safety-focused AI built by Anthropic.')">
-                <div class="card-top"><h4>🧠 Claude</h4><button class="like-btn" data-name="Claude" onclick="event.stopPropagation(); toggleLike(this);" aria-label="Like Claude">👍 <span>0</span></button></div>
-                <p>Anthropic model built for text processing and analysis.</p>
-            </div>
-            <div class="full-sub-card" onclick="alert('DeepSeek: Open-weights reasoning model.')">
-                <div class="card-top"><h4>🐋 DeepSeek</h4><button class="like-btn" data-name="DeepSeek" onclick="event.stopPropagation(); toggleLike(this);" aria-label="Like DeepSeek">👍 <span>0</span></button></div>
-                <p>High-efficiency open-weights logic and math model.</p>
-            </div>
-            <div class="full-sub-card" onclick="alert('GitHub Copilot: AI coding assistant from GitHub and Microsoft.')">
-                <div class="card-top"><h4>💻 GitHub Copilot</h4><button class="like-btn" data-name="GitHub Copilot" onclick="event.stopPropagation(); toggleLike(this);" aria-label="Like GitHub Copilot">👍 <span>0</span></button></div>
-                <p>AI coding assistant that helps write, test, and explain code faster.</p>
-            </div>
+            <div class="full-sub-card ai-model-card ai-open-card" role="button" tabindex="0" onclick="openAiDetails('gemini')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openAiDetails('gemini')}"><div><h4>✨ Gemini</h4><p>Google's multimodal AI for research, writing, reasoning, and coding.</p></div><span class="card-hint">Explore Gemini →</span></div>
+            <div class="full-sub-card ai-model-card ai-open-card" role="button" tabindex="0" onclick="openAiDetails('chatgpt')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openAiDetails('chatgpt')}"><div><h4>🤖 ChatGPT</h4><p>OpenAI's conversational assistant for creative and analytical work.</p></div><span class="card-hint">Explore ChatGPT →</span></div>
+            <div class="full-sub-card ai-model-card ai-open-card" role="button" tabindex="0" onclick="openAiDetails('copilot')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openAiDetails('copilot')}"><div><h4>💻 GitHub Copilot</h4><p>An AI coding assistant that helps developers plan, write, and understand code.</p></div><span class="card-hint">Explore Copilot →</span></div>
+            <div class="full-sub-card"><h4>🧠 Claude</h4><p>Anthropic assistant known for careful writing and long-context analysis.</p></div>
+            <div class="full-sub-card"><h4>🐋 DeepSeek</h4><p>AI model family with capable reasoning and coding options.</p></div>
         </div>
     </div>
 
-    <div id="programmingPage" class="page-view" style="display:none;">
-        <div class="settings-header"><h2>💻 Programming Languages</h2><button class="back-btn" onclick="showPage('website')">← Back</button></div>
-        <p style="color:#b0c4de; margin-bottom:20px;">Select a technology to learn more:</p>
-        <div class="full-page-grid">
-            <div class="full-sub-card" onclick="alert('HTML & CSS: Core web markup and styling languages.')">
-                <div class="card-top"><h4>🌐 HTML & CSS</h4><button class="like-btn" data-name="HTML & CSS" onclick="event.stopPropagation(); toggleLike(this);" aria-label="Like HTML & CSS">👍 <span>0</span></button></div>
-                <p>Core building blocks for structuring and styling web pages.</p>
-            </div>
-            <div class="full-sub-card" onclick="alert('JavaScript: Dynamic frontend programming language.')">
-                <div class="card-top"><h4>⚡ JavaScript</h4><button class="like-btn" data-name="JavaScript" onclick="event.stopPropagation(); toggleLike(this);" aria-label="Like JavaScript">👍 <span>0</span></button></div>
-                <p>Brings interactivity and logic to web browsers.</p>
-            </div>
-            <div class="full-sub-card" onclick="alert('Python: Versatile language for AI and backend.')">
-                <div class="card-top"><h4>🐍 Python</h4><button class="like-btn" data-name="Python" onclick="event.stopPropagation(); toggleLike(this);" aria-label="Like Python">👍 <span>0</span></button></div>
-                <p>Beginner-friendly language used in AI and automation.</p>
-            </div>
-            <div class="full-sub-card" onclick="alert('C++: High-performance systems language.')">
-                <div class="card-top"><h4>⚡ C++</h4><button class="like-btn" data-name="C++" onclick="event.stopPropagation(); toggleLike(this);" aria-label="Like C++">👍 <span>0</span></button></div>
-                <p>High-performance coding for games and software.</p>
-            </div>
-        </div>
+    <div id="aiDetailPage" class="page-view ai-detail-page" style="display:none" aria-live="polite">
+        <button class="back-btn ai-detail-back" onclick="showPage('aiPage')">← Back to AI models</button>
+        <div id="aiDetailContent"></div>
     </div>
 
-    <div id="gadgetsPage" class="page-view" style="display:none;">
-        <div class="settings-header"><h2>📱 Mobile Companies & Gadgets</h2><button class="back-btn" onclick="showPage('website')">← Back</button></div>
-        <p style="color:#b0c4de; margin-bottom:20px;">Explore leading smartphone brands and manufacturers:</p>
-        <div class="full-page-grid">
-            <div class="full-sub-card" onclick="alert('Samsung: Galaxy flagship series, foldables, and displays.')">
-                <div class="card-top"><h4>📱 Samsung</h4><button class="like-btn" data-name="Samsung" onclick="event.stopPropagation(); toggleLike(this);" aria-label="Like Samsung">👍 <span>0</span></button></div>
-                <p>Global leader in Galaxy smartphones and foldables.</p>
-            </div>
-            <div class="full-sub-card" onclick="alert('Apple: Premium iPhone ecosystem.')">
-                <div class="card-top"><h4>🍏 Apple</h4><button class="like-btn" data-name="Apple" onclick="event.stopPropagation(); toggleLike(this);" aria-label="Like Apple">👍 <span>0</span></button></div>
-                <p>iPhone lineup powered by advanced Apple silicon.</p>
-            </div>
-            <div class="full-sub-card" onclick="alert('Google Pixel: Pure Android and AI photography.')">
-                <div class="card-top"><h4>📸 Google Pixel</h4><button class="like-btn" data-name="Google Pixel" onclick="event.stopPropagation(); toggleLike(this);" aria-label="Like Google Pixel">👍 <span>0</span></button></div>
-                <p>Industry-leading computational photography.</p>
-            </div>
-            <div class="full-sub-card" onclick="alert('OnePlus: Fast and smooth flagship performance.')">
-                <div class="card-top"><h4>⚡ OnePlus</h4><button class="like-btn" data-name="OnePlus" onclick="event.stopPropagation(); toggleLike(this);" aria-label="Like OnePlus">👍 <span>0</span></button></div>
-                <p>Flagship killers and high-performance devices.</p>
-            </div>
-            <div class="full-sub-card" onclick="alert('Xiaomi & Redmi: Feature-packed value.')">
-                <div class="card-top"><h4>🔥 Xiaomi & Redmi</h4><button class="like-btn" data-name="Xiaomi & Redmi" onclick="event.stopPropagation(); toggleLike(this);" aria-label="Like Xiaomi & Redmi">👍 <span>0</span></button></div>
-                <p>High performance and affordability.</p>
-            </div>
-            <div class="full-sub-card" onclick="alert('Vivo: Sleek design and portrait cameras.')">
-                <div class="card-top"><h4>📸 Vivo</h4><button class="like-btn" data-name="Vivo" onclick="event.stopPropagation(); toggleLike(this);" aria-label="Like Vivo">👍 <span>0</span></button></div>
-                <p>Professional portrait camera systems.</p>
-            </div>
-            <div class="full-sub-card" onclick="alert('Oppo: Camera tech and fast VOOC charging.')">
-                <div class="card-top"><h4>💎 Oppo</h4><button class="like-btn" data-name="Oppo" onclick="event.stopPropagation(); toggleLike(this);" aria-label="Like Oppo">👍 <span>0</span></button></div>
-                <p>Stylish aesthetics and fast charging.</p>
-            </div>
-            <div class="full-sub-card" onclick="alert('Realme: Trendy design for youth.')">
-                <div class="card-top"><h4>⚡ Realme</h4><button class="like-btn" data-name="Realme" onclick="event.stopPropagation(); toggleLike(this);" aria-label="Like Realme">👍 <span>0</span></button></div>
-                <p>Leap-forward performance and trendy tech.</p>
-            </div>
-            <div class="full-sub-card" onclick="alert('POCO: Gaming power at aggressive prices.')">
-                <div class="card-top"><h4>🚀 POCO</h4><button class="like-btn" data-name="POCO" onclick="event.stopPropagation(); toggleLike(this);" aria-label="Like POCO">👍 <span>0</span></button></div>
-                <p>Extreme performance and gaming smartphones.</p>
-            </div>
-            <div class="full-sub-card" onclick="alert('iQOO: Monster performance chips.')">
-                <div class="card-top"><h4>🧊 iQOO</h4><button class="like-btn" data-name="iQOO" onclick="event.stopPropagation(); toggleLike(this);" aria-label="Like iQOO">👍 <span>0</span></button></div>
-                <p>Dedicated gaming performance and cooling.</p>
-            </div>
-            <div class="full-sub-card" onclick="alert('Infinix: Massive battery and fast displays.')">
-                <div class="card-top"><h4>🔋 Infinix</h4><button class="like-btn" data-name="Infinix" onclick="event.stopPropagation(); toggleLike(this);" aria-label="Like Infinix">👍 <span>0</span></button></div>
-                <p>Value-packed entertainment tech.</p>
-            </div>
-            <div class="full-sub-card" onclick="alert('Tecno: Vibrant styles and camera tech.')">
-                <div class="card-top"><h4>📷 Tecno</h4><button class="like-btn" data-name="Tecno" onclick="event.stopPropagation(); toggleLike(this);" aria-label="Like Tecno">👍 <span>0</span></button></div>
-                <p>Innovative camera features and modern designs.</p>
-            </div>
-            <div class="full-sub-card" onclick="alert('Motorola: Clean Android and foldables.')">
-                <div class="card-top"><h4>🦇 Motorola</h4><button class="like-btn" data-name="Motorola" onclick="event.stopPropagation(); toggleLike(this);" aria-label="Like Motorola">👍 <span>0</span></button></div>
-                <p>Reliable software and foldable Razr tech.</p>
-            </div>
-            <div class="full-sub-card" onclick="alert('Nothing: Transparent design and Glyph interface.')">
-                <div class="card-top"><h4>👁️ Nothing</h4><button class="like-btn" data-name="Nothing" onclick="event.stopPropagation(); toggleLike(this);" aria-label="Like Nothing">👍 <span>0</span></button></div>
-                <p>Unique transparent design aesthetics.</p>
-            </div>
-            <div class="full-sub-card" onclick="alert('Huawei: HarmonyOS ecosystem.')">
-                <div class="card-top"><h4>🔴 Huawei</h4><button class="like-btn" data-name="Huawei" onclick="event.stopPropagation(); toggleLike(this);" aria-label="Like Huawei">👍 <span>0</span></button></div>
-                <p>Advanced camera engineering.</p>
-            </div>
-            <div class="full-sub-card" onclick="alert('Honor: MagicOS capability.')">
-                <div class="card-top"><h4>💫 Honor</h4><button class="like-btn" data-name="Honor" onclick="event.stopPropagation(); toggleLike(this);" aria-label="Like Honor">👍 <span>0</span></button></div>
-                <p>Sleek flagships with powerful displays.</p>
-            </div>
-            <div class="full-sub-card" onclick="alert('Sony Xperia: Alpha camera integration.')">
-                <div class="card-top"><h4>🎥 Sony Xperia</h4><button class="like-btn" data-name="Sony Xperia" onclick="event.stopPropagation(); toggleLike(this);" aria-label="Like Sony Xperia">👍 <span>0</span></button></div>
-                <p>Cinematic displays and professional media.</p>
-            </div>
-            <div class="full-sub-card" onclick="alert('Asus ROG: Ultimate gaming hardware.')">
-                <div class="card-top"><h4>🎮 Asus ROG</h4><button class="like-btn" data-name="Asus ROG" onclick="event.stopPropagation(); toggleLike(this);" aria-label="Like Asus ROG">👍 <span>0</span></button></div>
-                <p>Extreme mobile gaming rigs.</p>
-            </div>
-            <div class="full-sub-card" onclick="alert('Lenovo: Tablets and mobile integration.')">
-                <div class="card-top"><h4>💻 Lenovo</h4><button class="like-btn" data-name="Lenovo" onclick="event.stopPropagation(); toggleLike(this);" aria-label="Like Lenovo">👍 <span>0</span></button></div>
-                <p>Versatile computing devices.</p>
-            </div>
-            <div class="full-sub-card" onclick="alert('ZTE & Nubia: Under-display cameras.')">
-                <div class="card-top"><h4>🔮 ZTE & Nubia</h4><button class="like-btn" data-name="ZTE & Nubia" onclick="event.stopPropagation(); toggleLike(this);" aria-label="Like ZTE & Nubia">👍 <span>0</span></button></div>
-                <p>Pioneering gaming phones and cameras.</p>
-            </div>
-        </div>
-    </div>
+    <div id="programmingPage" class="page-view" style="display:none"><div class="settings-header"><h2>💻 Programming Languages</h2><button class="back-btn" onclick="showPage('website')">← Back</button></div><p style="color:#b0c4de;margin-bottom:20px">Select a technology to learn more:</p><div class="full-page-grid"><div class="full-sub-card"><h4>🌐 HTML & CSS</h4><p>Core building blocks for structuring and styling web pages.</p></div><div class="full-sub-card"><h4>⚡ JavaScript</h4><p>Brings interactivity and logic to web browsers.</p></div><div class="full-sub-card"><h4>🐍 Python</h4><p>Beginner-friendly language used in AI and automation.</p></div><div class="full-sub-card"><h4>⚡ C++</h4><p>High-performance coding for games and software.</p></div></div></div>
+    <div id="gadgetsPage" class="page-view" style="display:none"><div class="settings-header"><h2>📱 Mobile Companies & Gadgets</h2><button class="back-btn" onclick="showPage('website')">← Back</button></div><div class="full-page-grid"><div class="full-sub-card"><h4>📱 Samsung</h4><p>Galaxy smartphones, foldables, and displays.</p></div><div class="full-sub-card"><h4>🍏 Apple</h4><p>iPhone lineup powered by Apple silicon.</p></div><div class="full-sub-card"><h4>📸 Google Pixel</h4><p>Android phones and computational photography.</p></div><div class="full-sub-card"><h4>⚡ OnePlus</h4><p>Flagship phones and high-performance devices.</p></div><div class="full-sub-card"><h4>🔥 Xiaomi & Redmi</h4><p>Feature-packed devices at varied price points.</p></div><div class="full-sub-card"><h4>💎 Oppo & Vivo</h4><p>Smartphones with camera and charging innovations.</p></div></div></div>
+    <div id="sciencePage" class="page-view" style="display:none"><div class="settings-header"><h2>🔬 Science & Innovation</h2><button class="back-btn" onclick="showPage('website')">← Back</button></div><div class="settings-card"><h3>Future Innovations</h3><p style="font-size:13px;color:#8b96aa;margin-top:5px">Discover scientific breakthroughs and space exploration.</p></div></div>
 
-    <div id="gamesPage" class="page-view" style="display:none;">
-        <div class="settings-header"><h2>🎮 VIBGYOR Games</h2><button class="back-btn" onclick="showPage('website')">← Back</button></div>
-        <p class="games-intro">When you're bored, try one of these quick mini games.</p>
+    <div id="gamesPage" class="page-view" style="display:none"><div class="settings-header"><h2>🎮 VIBGYOR Games</h2><button class="back-btn" onclick="showPage('website')">← Back</button></div><p class="games-intro">When you're bored, try one of these quick mini games.</p><div class="game-grid">
+        <div class="game-card"><span class="game-emoji">🐍</span><h3>Snake Game</h3><p>Eat food and avoid crashing.</p><button class="game-launch-btn" data-game="snake">Play Now</button></div>
+        <div class="game-card"><span class="game-emoji">🐉</span><h3>Dragon Jump</h3><p>Jump over obstacles and survive.</p><button class="game-launch-btn" data-game="dragon">Play Now</button></div>
+        <div class="game-card"><span class="game-emoji">⚫</span><h3>Gobang</h3><p>Classic five-in-a-row challenge.</p><button class="game-launch-btn" data-game="gobang">Play Now</button></div>
+        <div class="game-card"><span class="game-emoji">⭕</span><h3>Tic-Tac-Toe</h3><p>Play a quick match to three in a row.</p><button class="game-launch-btn" data-game="tictactoe">Play Now</button></div>
+        <div class="game-card"><span class="game-emoji">🧠</span><h3>Memory Match</h3><p>Find all matching cards.</p><button class="game-launch-btn" data-game="memory">Play Now</button></div>
+        <div class="game-card"><span class="game-emoji">🎯</span><h3>Guess Number</h3><p>Guess the hidden number before your turns end.</p><button class="game-launch-btn" data-game="guess">Play Now</button></div>
+        <div class="game-card"><span class="game-emoji">❓</span><h3>Quick Quiz</h3><p>Answer a few fun tech questions.</p><button class="game-launch-btn" data-game="quiz">Play Now</button></div>
+    </div></div>
+    <div id="gameModal" class="game-modal" aria-live="polite"><div class="game-modal-content"><button class="modal-close" type="button" onclick="closeGameModal()">✖</button><div id="gameModalBody"></div></div></div>
 
-        <div class="game-grid">
-            <div class="game-card">
-                <span class="game-emoji">🐍</span>
-                <h3>Snake Game</h3>
-                <p>Eat food and avoid crashing.</p>
-                <button class="game-launch-btn" data-game="snake">Play Now</button>
-            </div>
-            <div class="game-card">
-                <span class="game-emoji">🐉</span>
-                <h3>Dragon Jump</h3>
-                <p>Jump over obstacles and survive.</p>
-                <button class="game-launch-btn" data-game="dragon">Play Now</button>
-            </div>
-            <div class="game-card">
-                <span class="game-emoji">⚫</span>
-                <h3>Gobang</h3>
-                <p>Classic five-in-a-row challenge.</p>
-                <button class="game-launch-btn" data-game="gobang">Play Now</button>
-            </div>
-            <div class="game-card">
-                <span class="game-emoji">⭕</span>
-                <h3>Tic-Tac-Toe</h3>
-                <p>Play a quick match to three in a row.</p>
-                <button class="game-launch-btn" data-game="tictactoe">Play Now</button>
-            </div>
-            <div class="game-card">
-                <span class="game-emoji">🧠</span>
-                <h3>Memory Match</h3>
-                <p>Find all matching cards.</p>
-                <button class="game-launch-btn" data-game="memory">Play Now</button>
-            </div>
-            <div class="game-card">
-                <span class="game-emoji">🎯</span>
-                <h3>Guess Number</h3>
-                <p>Guess the hidden number before your turns end.</p>
-                <button class="game-launch-btn" data-game="guess">Play Now</button>
-            </div>
-            <div class="game-card">
-                <span class="game-emoji">❓</span>
-                <h3>Quick Quiz</h3>
-                <p>Answer a few fun tech questions.</p>
-                <button class="game-launch-btn" data-game="quiz">Play Now</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="gameModal" class="game-modal" aria-live="polite">
-        <div class="game-modal-content">
-            <button class="modal-close" type="button" onclick="closeGameModal()">✖</button>
-            <div id="gameModalBody"></div>
-        </div>
-    </div>
-
-    <div id="sciencePage" class="page-view" style="display:none;">
-        <div class="settings-header"><h2>🔬 Science & Innovation</h2><button class="back-btn" onclick="showPage('website')">← Back</button></div>
-        <div class="settings-card"><h3>Future Innovations</h3><p style="font-size:13px; color:#8b96aa; margin-top:5px;">Discover scientific breakthroughs and space exploration.</p></div>
-    </div>
-
-    <div id="settingsPage" class="page-view" style="display: none;">
-        <div class="settings-header">
-            <h2>⚙️ Settings</h2>
-            <button class="back-btn" onclick="showPage('website')">← Back</button>
-        </div>
-
-        <div class="section-card">
-            <p class="label">APPEARANCE</p>
-            <h2>Theme Mode</h2>
-            <div style="margin-top: 10px; display: flex; align-items: center; justify-content: space-between;">
-                <span style="color: #a0a5b5; font-size: 0.9rem;">Switch Dark / Light Mode</span>
-                <button onclick="toggleTheme()" style="padding: 8px 16px; background: #00bcd4; border: none; border-radius: 6px; color: #fff; cursor: pointer; font-weight: bold;">Toggle Theme</button>
-            </div>
-        </div>
-
-        <div class="section-card" style="margin-top: 15px;">
-            <p class="label">FEEDBACK</p>
-            <h2>💬 Send Feedback</h2>
-            <div style="margin-top: 10px;">
-                <p style="color: #a0a5b5; font-size: 0.85rem; margin-bottom: 8px;">Found a bug or have an idea? Let us know!</p>
-                <input type="text" id="userFeedback" placeholder="Type your suggestion..." style="width: 100%; padding: 8px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: white; margin-bottom: 10px;">
-                <button onclick="alert('Thank you for your feedback!')" style="padding: 6px 12px; background: #22c55e; border: none; border-radius: 4px; color: #fff; cursor: pointer; font-size: 0.85rem;">Send</button>
-            </div>
-        </div>
-
-        <div class="section-card" style="margin-top: 15px;">
-            <p class="label">ABOUT</p>
-            <h2>👨‍💻 Developer</h2>
-            <div style="margin-top: 10px; color: #a0a5b5; font-size: 0.9rem; line-height: 1.6;">
-                <p><strong>VIBGYOR Technologies</strong></p>
-                <p>VIBGYOR technologies website is designed and developed by Syed.Suhan</p>
-                <p style="margin-top: 10px;">
-                    <strong>📸 Instagram:</strong> <a href="https://instagram.com/the__suhan__official__" target="_blank" style="color: #00bcd4;">@the__suhan__official__</a><br>
-                    <strong>🏢 Company's Instagram:</strong> <a href="https://instagram.com/vibgyor_tech_" target="_blank" style="color: #00bcd4;">@vibgyor_tech_</a>
-                </p>
-                <p style="margin-top: 10px; font-style: italic;">⭐ Support us on these pages!</p>
-            </div>
-        </div>
-    </div>
-
+    <div id="settingsPage" class="page-view" style="display:none"><div class="settings-header"><h2>⚙️ Settings</h2><button class="back-btn" onclick="showPage('website')">← Back</button></div><div class="section-card"><p class="label">APPEARANCE</p><h2>Theme Mode</h2><div style="margin-top:10px;display:flex;align-items:center;justify-content:space-between"><span style="color:#a0a5b5;font-size:.9rem">Switch Dark / Light Mode</span><button onclick="toggleTheme()" style="padding:8px 16px;background:#00bcd4;border:0;border-radius:6px;color:#fff;cursor:pointer;font-weight:bold">Toggle Theme</button></div></div><div class="section-card"><p class="label">ABOUT</p><h2>👨‍💻 Developer</h2><p style="margin-top:10px;color:#a0a5b5">VIBGYOR Technologies website is designed and developed by Syed.Suhan</p><p style="margin-top:10px"><a href="https://instagram.com/the__suhan__official__" style="color:#00bcd4">Instagram</a> · <a href="https://instagram.com/vibgyor_tech_" style="color:#00bcd4">VIBGYOR Tech</a></p></div></div>
+    <script src="ai-details.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
